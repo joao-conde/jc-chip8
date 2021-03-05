@@ -22,6 +22,46 @@ pub struct Chip8 {
 }
 
 impl Chip8 {
+    fn process_opcode(&mut self) {
+        let opcode =
+            (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
+
+        self.pc += 2;
+
+        let id = opcode & 0xF000;
+        let addr = opcode & 0x0FFF;
+        let nibble = (opcode & 0x000F) as u8;
+        let x = (opcode >> 8 & 0xF) as u8;
+        let y = (opcode >> 4 & 0xF) as u8;
+        let byte = (opcode & 0x00FF) as u8;
+
+        match id {
+            0x00E0 => self.vram = [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
+            0x00EE => self.return_subroutine(),
+            0x1000 => self.pc = addr,
+            0x2000 => self.call_subroutine(addr),
+            0x3000 => self.skip_if_equal(x, byte),
+            0x4000 => self.skip_if_not_equal(x, byte),
+            0x5000 => self.skip_if_equal(x, self.registers[y as usize]),
+            0x6000 => self.registers[x as usize] = byte,
+            0x7000 => self.registers[x as usize] += byte,
+            0x8000 => self.registers[x as usize] = self.registers[y as usize],
+            0x8001 => self.registers[x as usize] |= self.registers[y as usize],
+            0x8002 => self.registers[x as usize] &= self.registers[y as usize],
+            0x8003 => self.registers[x as usize] ^= self.registers[y as usize],
+            0x8004 => self.add_with_carry(x, y),
+            0x8005 => self.registers[x as usize] = self.sub_not_borrow(x, y),
+            0x8006 => self.shift_right(x),
+            0x8007 => self.registers[x as usize] = self.sub_not_borrow(y, x),
+            0x800E => self.shift_left(x),
+            0x9000 => self.skip_if_not_equal(x, self.registers[y as usize]),
+            0xA000 => self.i = addr,
+            0xB000 => self.pc = addr + self.registers[0] as u16,
+            0xC000 => self.registers[x as usize] = byte & random::<u8>() & 0xFF,
+            _ => panic!("unknown instruction"),
+        }
+    }
+
     fn add_with_carry(&mut self, x: u8, y: u8) {
         let (sum, overflow) =
             self.registers[x as usize].overflowing_add(self.registers[y as usize]);
@@ -67,44 +107,18 @@ impl Chip8 {
         }
     }
 
-    fn process_opcode(&mut self) {
-        let opcode =
-            (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
-
-        self.pc += 2;
-
-        let id = opcode & 0xF000;
-        let addr = opcode & 0x0FFF;
-        let nibble = (opcode & 0x000F) as u8;
-        let x = (opcode >> 8 & 0xF) as u8;
-        let y = (opcode >> 4 & 0xF) as u8;
-        let byte = (opcode & 0x00FF) as u8;
-
-        match id {
-            0x00E0 => self.vram = [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
-            0x00EE => self.return_subroutine(),
-            0x1000 => self.pc = addr,
-            0x2000 => self.call_subroutine(addr),
-            0x3000 => self.skip_if_equal(x, byte),
-            0x4000 => self.skip_if_not_equal(x, byte),
-            0x5000 => self.skip_if_equal(x, self.registers[y as usize]),
-            0x6000 => self.registers[x as usize] = byte,
-            0x7000 => self.registers[x as usize] += byte,
-            0x8000 => self.registers[x as usize] = self.registers[y as usize],
-            0x8001 => self.registers[x as usize] |= self.registers[y as usize],
-            0x8002 => self.registers[x as usize] &= self.registers[y as usize],
-            0x8003 => self.registers[x as usize] ^= self.registers[y as usize],
-            0x8004 => self.add_with_carry(x, y),
-            0x8005 => self.registers[x as usize] = self.sub_not_borrow(x, y),
-            0x8006 => self.shift_right(x),
-            0x8007 => self.registers[x as usize] = self.sub_not_borrow(y, x),
-            0x800E => self.shift_left(x),
-            0x9000 => self.skip_if_not_equal(x, self.registers[y as usize]),
-            0xA000 => self.i = addr,
-            0xB000 => self.pc = addr + self.registers[0] as u16,
-            0xC000 => self.registers[x as usize] = byte & random::<u8>() & 0xFF,
-            _ => panic!("unknown instruction"),
+    fn draw_sprite(&mut self, x0: usize, y0: usize, height: usize) -> bool {
+        let mut collision = false;
+        for y in 0..height {
+            let sprite = self.ram[self.i as usize + y];
+            for x in 0..8 {
+                let addr = (y0 + y) * SCREEN_WIDTH + x0 + x;
+                let prev = self.vram[addr];
+                self.vram[addr] ^= sprite & (0x80 >> x);
+                collision = self.vram[addr] == 0 && prev == 1;
+            }
         }
+        collision
     }
 }
 

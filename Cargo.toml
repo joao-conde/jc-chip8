@@ -4,4 +4,6 @@ version = "0.1.0"
 authors = ["João <joaodiasconde@gmail.com>"]
 edition = "2018"
 
-[dependencies]
+[dependencies.wasm-bindgen]
+version = "0.2"
+default-features = false

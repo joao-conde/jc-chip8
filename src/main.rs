@@ -1,3 +1,6 @@
+use jc_chip8::chip8::Chip8;
+
 fn main() {
-    println!("Hello, world!");
+    let chip8 = Chip8::default();
+    println!("{:?}", chip8)
 }

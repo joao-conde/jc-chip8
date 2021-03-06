@@ -25,9 +25,9 @@ E 09: 8XY1 check the result of the OR operation
 E 10: 8XY2 check the result of AND operation
 E 11: 8XY3 check the result of the XOR operation
 E 12: 8XYE verify that VF is set to the MSB (most significant bit or most left) before the shift and  VF does not take value 0 every time
-E 13: 8XYE verify that VF is set to the MSB (most significant bit or most left) before the shift and  VF does not take value 1 every time 
+E 13: 8XYE verify that VF is set to the MSB (most significant bit or most left) before the shift and  VF does not take value 1 every time
 E 14: 8XY6 verify that VF is set to the LSB (least significant bit or most right ) before the shift and  VF does not take value 0 every time
-E 15: 8XY6 verify that VF is the LSB (least significant bit or most right) before the shift and  VF does not take value 1 every time 
+E 15: 8XY6 verify that VF is the LSB (least significant bit or most right) before the shift and  VF does not take value 1 every time
 E 16: FX55 and FX65 verify that these two opcodes are implemented. The error may come from one or the other or both are defects.
 E 17: FX33 calculating the binary representation is mistaken or the result is poorly stored into memory or poorly poped (FX65 or FX1E).
 /**************************/

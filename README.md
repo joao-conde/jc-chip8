@@ -7,7 +7,7 @@ I first wrote it in TypeScript: [chip8-ts](https://github.com/joao-conde/chip8-e
 ### References
 
 1. https://en.wikipedia.org/wiki/CHIP-8
-2. https://www.reddit.com/r/EmuDev/comments/eb2nac/the_chip8_archive_a_collection_of_modern_chip8/ 
+2. https://www.reddit.com/r/EmuDev/comments/eb2nac/the_chip8_archive_a_collection_of_modern_chip8/
 3. http://www.multigesture.net/articles/how-to-write-an-emulator-chip-8-interpreter/
 4. http://devernay.free.fr/hacks/chip8/C8TECH10.HTM (Cowgods)
 5. https://github.com/hugoferreira/chip8

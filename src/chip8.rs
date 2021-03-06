@@ -65,7 +65,7 @@ impl Chip8 {
             0x4000 => self.skip_if(self.registers[x] != byte),
             0x5000 => self.skip_if(self.registers[x] == self.registers[y]),
             0x6000 => self.registers[x] = byte,
-            0x7000 => self.registers[x] += byte,
+            0x7000 => self.registers[x] = self.registers[x].wrapping_add(byte),
             0x8000 => match nibble {
                 0x0 => self.registers[x] = self.registers[y],
                 0x1 => self.registers[x] |= self.registers[y],

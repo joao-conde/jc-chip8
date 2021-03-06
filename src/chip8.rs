@@ -1,4 +1,4 @@
-use rand::random;
+use getrandom::getrandom;
 use wasm_bindgen::prelude::*;
 
 pub const SCREEN_WIDTH: usize = 64;
@@ -59,7 +59,7 @@ impl Chip8 {
             0x0000 => match byte {
                 0xE0 => self.vram = [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
                 0xEE => self.return_subroutine(),
-                _ => self.unknown_opcode(opcode),
+                _ => Chip8::unknown_opcode(opcode),
             },
             0x1000 => self.pc = addr,
             0x2000 => self.call_subroutine(addr),
@@ -78,12 +78,12 @@ impl Chip8 {
                 0x6 => self.shift_right(x),
                 0x7 => self.registers[x] = self.sub_not_borrow(y, x),
                 0xE => self.shift_left(x),
-                _ => self.unknown_opcode(opcode),
+                _ => Chip8::unknown_opcode(opcode),
             },
             0x9000 => self.skip_if(self.registers[x] != self.registers[y]),
             0xA000 => self.i = addr,
             0xB000 => self.pc = addr + self.registers[0] as u16,
-            0xC000 => self.registers[x] = byte & random::<u8>(),
+            0xC000 => self.registers[x] = byte & Chip8::rand(),
             0xD000 => self.draw_sprite(
                 self.registers[x] as usize,
                 self.registers[y] as usize,
@@ -92,7 +92,7 @@ impl Chip8 {
             0xE000 => match byte {
                 0x9E => self.skip_if(self.keys[self.registers[x] as usize]),
                 0xA1 => self.skip_if(!self.keys[self.registers[x] as usize]),
-                _ => self.unknown_opcode(opcode),
+                _ => Chip8::unknown_opcode(opcode),
             },
             0xF000 => match byte {
                 0x07 => self.registers[x] = self.dt,
@@ -108,9 +108,9 @@ impl Chip8 {
                     self.registers[0..=x]
                         .clone_from_slice(&self.ram[self.i as usize..=self.i as usize + x]);
                 }
-                _ => self.unknown_opcode(opcode),
+                _ => Chip8::unknown_opcode(opcode),
             },
-            _ => self.unknown_opcode(opcode),
+            _ => Chip8::unknown_opcode(opcode),
         }
     }
 
@@ -211,8 +211,14 @@ impl Chip8 {
         ]);
     }
 
-    fn unknown_opcode(&self, opcode: u16) {
+    fn unknown_opcode(opcode: u16) {
         println!("unknown opcode 0x{:04X}", opcode)
+    }
+
+    fn rand() -> u8 {
+        let mut n = [0];
+        getrandom(&mut n).unwrap();
+        n[0]
     }
 }
 

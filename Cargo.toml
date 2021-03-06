@@ -2,13 +2,21 @@
 name = "jc-chip8"
 version = "0.1.0"
 authors = ["João <joaodiasconde@gmail.com>"]
+description = "Chip-8 Emulator in Rust and compilable to WASM"
 edition = "2018"
 
 [lib]
+name = "jc_chip8"
 crate-type = ["cdylib", "rlib"]
 
-[dependencies.rand]
-version = "0.8"
+[dependencies.getrandom]
+version = "0.2"
+features = ["js"]
 
 [dependencies.wasm-bindgen]
 version = "0.2"
+
+[profile.release]
+debug = false
+lto = true
+opt-level = 3

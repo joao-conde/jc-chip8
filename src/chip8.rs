@@ -82,13 +82,11 @@ impl Chip8 {
             0xA000 => self.i = addr,
             0xB000 => self.pc = addr + self.registers[0] as u16,
             0xC000 => self.registers[x] = byte & random::<u8>(),
-            0xD000 => {
-                self.registers[0xF] = self.draw_sprite(
-                    self.registers[x] as usize,
-                    self.registers[y] as usize,
-                    nibble as usize,
-                ) as u8
-            }
+            0xD000 => self.draw_sprite(
+                self.registers[x] as usize,
+                self.registers[y] as usize,
+                nibble as usize,
+            ),
             0xE000 => match byte {
                 0x9E => self.skip_if(self.keys[self.registers[x] as usize]),
                 0xA1 => self.skip_if(!self.keys[self.registers[x] as usize]),
@@ -171,18 +169,23 @@ impl Chip8 {
         }
     }
 
-    fn draw_sprite(&mut self, x0: usize, y0: usize, height: usize) -> bool {
+    fn draw_sprite(&mut self, x0: usize, y0: usize, height: usize) {
         let mut collision = false;
+
         for y in 0..height {
             let sprite = self.ram[self.i as usize + y];
             for x in 0..8 {
-                let addr = (y0 + y) * SCREEN_WIDTH + x0 + x;
-                let prev = self.vram[addr];
-                self.vram[addr] ^= (sprite & (0x80 >> x)) >> (7 - x);
-                collision = self.vram[addr] == 0 && prev == 1;
+                if (sprite & (0x80 >> x)) != 0 {
+                    let addr = (y0 + y) * SCREEN_WIDTH + x0 + x;
+                    if self.vram[addr] == 1 {
+                        collision = true
+                    }
+                    self.vram[addr] ^= 1
+                }
             }
         }
-        collision
+
+        self.registers[0xF] = collision as u8;
     }
 
     fn load_font(&mut self) {

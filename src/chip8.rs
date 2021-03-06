@@ -1,11 +1,11 @@
 use rand::random;
 
-const SCREEN_WIDTH: usize = 64;
-const SCREEN_HEIGHT: usize = 32;
-const RAM_SIZE: usize = 4 * 1024;
-const STACK_SIZE: usize = 16;
-const NUM_REGISTERS: usize = 16;
-const NUM_KEYS: usize = 16;
+pub const SCREEN_WIDTH: usize = 64;
+pub const SCREEN_HEIGHT: usize = 32;
+pub const RAM_SIZE: usize = 4 * 1024;
+pub const STACK_SIZE: usize = 16;
+pub const NUM_REGISTERS: usize = 16;
+pub const NUM_KEYS: usize = 16;
 
 pub struct Chip8 {
     vram: [u8; SCREEN_WIDTH * SCREEN_HEIGHT],
@@ -102,10 +102,12 @@ impl Chip8 {
                 0x1E => self.i += self.registers[x] as u16,
                 0x29 => self.i = self.registers[x] as u16 * 5,
                 0x33 => self.store_bcd(x),
-                0x55 => self.ram[self.i as usize..self.i as usize + x]
-                    .clone_from_slice(&self.registers[0..x]),
-                0x65 => self.registers[0..x]
-                    .clone_from_slice(&self.ram[self.i as usize..self.i as usize + x]),
+                0x55 => self.ram[self.i as usize..=self.i as usize + x]
+                    .clone_from_slice(&self.registers[0..=x]),
+                0x65 => {
+                    self.registers[0..=x]
+                        .clone_from_slice(&self.ram[self.i as usize..=self.i as usize + x]);
+                }
                 _ => self.unknown_opcode(opcode),
             },
             _ => self.unknown_opcode(opcode),
@@ -119,7 +121,7 @@ impl Chip8 {
     }
 
     fn sub_not_borrow(&mut self, x: usize, y: usize) -> u8 {
-        self.registers[0xF] = (self.registers[x] <= self.registers[y]) as u8;
+        self.registers[0xF] = (self.registers[x] > self.registers[y]) as u8;
         self.registers[x].saturating_sub(self.registers[y])
     }
 
@@ -135,12 +137,12 @@ impl Chip8 {
     }
 
     fn shift_right(&mut self, x: usize) {
-        self.registers[0xF] = self.registers[x as usize] & 0x01;
+        self.registers[0xF] = self.registers[x] & 0x01;
         self.registers[x] >>= 1;
     }
 
     fn shift_left(&mut self, x: usize) {
-        self.registers[0xF] = (self.registers[x as usize] & 0x08) >> 7;
+        self.registers[0xF] = (self.registers[x] & 0x80) >> 7;
         self.registers[x] <<= 1;
     }
 

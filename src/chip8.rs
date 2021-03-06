@@ -5,6 +5,7 @@ const SCREEN_HEIGHT: usize = 32;
 const RAM_SIZE: usize = 4 * 1024;
 const STACK_SIZE: usize = 16;
 const NUM_REGISTERS: usize = 16;
+const NUM_KEYS: usize = 16;
 
 pub struct Chip8 {
     vram: [u8; SCREEN_WIDTH * SCREEN_HEIGHT],
@@ -17,6 +18,7 @@ pub struct Chip8 {
     pc: u16,
     sp: u8,
     clocks: usize,
+    keys: [bool; NUM_KEYS],
 }
 
 impl Chip8 {
@@ -39,27 +41,15 @@ impl Chip8 {
 }
 
 impl Chip8 {
-    fn clock_dt(&mut self) {
-        self.dt = self.dt.checked_sub(1).unwrap_or(0);
-    }
-
-    fn clock_st(&mut self) {
-        if self.st > 0 {
-            // todo!("raise beep request");
-            self.st -= 1;
-        }
-    }
-
     fn process_opcode(&mut self) {
         let opcode =
             (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
-
         self.pc += 2;
 
         let addr = opcode & 0x0FFF;
         let nibble = (opcode & 0x000F) as u8;
-        let x = (opcode >> 8 & 0xF) as u8;
-        let y = (opcode >> 4 & 0xF) as u8;
+        let x = (opcode >> 8 & 0xF) as usize;
+        let y = (opcode >> 4 & 0xF) as usize;
         let byte = (opcode & 0x00FF) as u8;
 
         match opcode {
@@ -67,45 +57,45 @@ impl Chip8 {
             0x00EE => self.return_subroutine(),
             0x1000 => self.pc = addr,
             0x2000 => self.call_subroutine(addr),
-            0x3000 => self.skip_if_equal(x as usize, byte),
-            0x4000 => self.skip_if_not_equal(x as usize, byte),
-            0x5000 => self.skip_if_equal(x as usize, self.registers[y as usize]),
-            0x6000 => self.registers[x as usize] = byte,
-            0x7000 => self.registers[x as usize] += byte,
-            0x8000 => self.registers[x as usize] = self.registers[y as usize],
-            0x8001 => self.registers[x as usize] |= self.registers[y as usize],
-            0x8002 => self.registers[x as usize] &= self.registers[y as usize],
-            0x8003 => self.registers[x as usize] ^= self.registers[y as usize],
-            0x8004 => self.add_with_carry(x as usize, y as usize),
-            0x8005 => self.registers[x as usize] = self.sub_not_borrow(x as usize, y as usize),
-            0x8006 => self.shift_right(x as usize),
-            0x8007 => self.registers[x as usize] = self.sub_not_borrow(y as usize, x as usize),
-            0x800E => self.shift_left(x as usize),
-            0x9000 => self.skip_if_not_equal(x as usize, self.registers[y as usize]),
+            0x3000 => self.skip_if(self.registers[x] == byte),
+            0x4000 => self.skip_if(self.registers[x] != byte),
+            0x5000 => self.skip_if(self.registers[x] == self.registers[y]),
+            0x6000 => self.registers[x] = byte,
+            0x7000 => self.registers[x] += byte,
+            0x8000 => self.registers[x] = self.registers[y],
+            0x8001 => self.registers[x] |= self.registers[y],
+            0x8002 => self.registers[x] &= self.registers[y],
+            0x8003 => self.registers[x] ^= self.registers[y],
+            0x8004 => self.add_with_carry(x, y),
+            0x8005 => self.registers[x] = self.sub_not_borrow(x, y),
+            0x8006 => self.shift_right(x),
+            0x8007 => self.registers[x] = self.sub_not_borrow(y, x),
+            0x800E => self.shift_left(x),
+            0x9000 => self.skip_if(self.registers[x] != self.registers[y]),
             0xA000 => self.i = addr,
             0xB000 => self.pc = addr + self.registers[0] as u16,
-            0xC000 => self.registers[x as usize] = byte & random::<u8>(),
+            0xC000 => self.registers[x] = byte & random::<u8>(),
             0xD000 => {
                 self.registers[0xF] = self.draw_sprite(
-                    self.registers[x as usize] as usize,
-                    self.registers[y as usize] as usize,
+                    self.registers[x] as usize,
+                    self.registers[y] as usize,
                     nibble as usize,
                 ) as u8
             }
-            0xE09E => todo!("keyboard"),
-            0xE0A1 => todo!("keyboard"),
-            0xF007 => self.registers[x as usize] = self.dt,
-            0xF00A => todo!("keyboard"),
-            0xF015 => self.dt = self.registers[x as usize],
-            0xF018 => self.st = self.registers[x as usize],
-            0xF01E => self.i += self.registers[x as usize] as u16,
-            0xF029 => self.i = self.registers[x as usize] as u16 * 5,
-            0xF033 => self.store_bcd(x as usize),
-            0xF055 => self.ram[self.i as usize..self.i as usize + x as usize]
-                .clone_from_slice(&self.registers[0..x as usize]),
-            0xF065 => self.registers[0..x as usize]
-                .clone_from_slice(&self.ram[self.i as usize..self.i as usize + x as usize]),
-            _ => panic!("unknown instruction"),
+            0xE09E => self.skip_if(self.keys[self.registers[x] as usize]),
+            0xE0A1 => self.skip_if(!self.keys[self.registers[x] as usize]),
+            0xF007 => self.registers[x] = self.dt,
+            0xF00A => self.pause_if(self.keys.iter().all(|k| !k)),
+            0xF015 => self.dt = self.registers[x],
+            0xF018 => self.st = self.registers[x],
+            0xF01E => self.i += self.registers[x] as u16,
+            0xF029 => self.i = self.registers[x] as u16 * 5,
+            0xF033 => self.store_bcd(x),
+            0xF055 => self.ram[self.i as usize..self.i as usize + x]
+                .clone_from_slice(&self.registers[0..x]),
+            0xF065 => self.registers[0..x]
+                .clone_from_slice(&self.ram[self.i as usize..self.i as usize + x]),
+            _ => println!("unknown opcode 0x{:02X}", opcode),
         }
     }
 
@@ -147,15 +137,22 @@ impl Chip8 {
         self.ram[self.i as usize + 2] = self.registers[x] % 10;
     }
 
-    fn skip_if_equal(&mut self, x: usize, val: u8) {
-        if self.registers[x] == val {
-            self.pc += 2;
-        }
+    fn skip_if(&mut self, skip: bool) {
+        self.pc += if skip { 2 } else { 0 };
     }
 
-    fn skip_if_not_equal(&mut self, x: usize, val: u8) {
-        if self.registers[x] == val {
-            self.pc += 2;
+    fn pause_if(&mut self, pause: bool) {
+        self.pc -= if pause { 2 } else { 0 };
+    }
+
+    fn clock_dt(&mut self) {
+        self.dt = self.dt.saturating_sub(1);
+    }
+
+    fn clock_st(&mut self) {
+        if self.st > 0 {
+            // todo!("raise beep request");
+            self.st -= 1;
         }
     }
 
@@ -205,9 +202,10 @@ impl Default for Chip8 {
             i: 0,
             dt: 0,
             st: 0,
-            pc: 0,
+            pc: 0x200,
             sp: 0,
             clocks: 0,
+            keys: [false; NUM_KEYS],
         };
         chip8.load_font();
         chip8

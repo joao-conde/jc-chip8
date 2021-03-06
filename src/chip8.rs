@@ -1,4 +1,5 @@
 use rand::random;
+use wasm_bindgen::prelude::*;
 
 pub const SCREEN_WIDTH: usize = 64;
 pub const SCREEN_HEIGHT: usize = 32;
@@ -7,6 +8,7 @@ pub const STACK_SIZE: usize = 16;
 pub const NUM_REGISTERS: usize = 16;
 pub const NUM_KEYS: usize = 16;
 
+#[wasm_bindgen]
 pub struct Chip8 {
     vram: [u8; SCREEN_WIDTH * SCREEN_HEIGHT],
     ram: [u8; RAM_SIZE],

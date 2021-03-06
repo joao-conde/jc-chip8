@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["João <joaodiasconde@gmail.com>"]
 edition = "2018"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies.rand]
 version = "0.8"
 

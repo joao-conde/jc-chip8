@@ -21,3 +21,5 @@ I first wrote it in TypeScript: [chip8-ts](https://github.com/joao-conde/chip8-e
 ### Building
 
 `wasm-pack build --release --target=web -d demo/`
+
+`git subtree push --prefix demo origin gh-pages`

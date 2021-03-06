@@ -2,13 +2,10 @@ use rand::random;
 
 const SCREEN_WIDTH: usize = 64;
 const SCREEN_HEIGHT: usize = 32;
-
 const RAM_SIZE: usize = 4 * 1024;
 const STACK_SIZE: usize = 16;
-
 const NUM_REGISTERS: usize = 16;
 
-#[derive(Debug)]
 pub struct Chip8 {
     vram: [u8; SCREEN_WIDTH * SCREEN_HEIGHT],
     ram: [u8; RAM_SIZE],
@@ -22,13 +19,12 @@ pub struct Chip8 {
 }
 
 impl Chip8 {
-    fn process_opcode(&mut self) {
+    pub fn process_opcode(&mut self) {
         let opcode =
             (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
 
         self.pc += 2;
 
-        let id = opcode & 0xF000;
         let addr = opcode & 0x0FFF;
         let nibble = (opcode & 0x000F) as u8;
         let x = (opcode >> 8 & 0xF) as u8;
@@ -82,6 +78,23 @@ impl Chip8 {
         }
     }
 
+    pub fn tick_dt(&mut self) {
+        self.dt = self.dt.checked_sub(1).unwrap_or(0);
+    }
+
+    pub fn tick_st(&mut self) {
+        if self.st > 0 {
+            // todo!("raise beep request");
+            self.st -= 1;
+        }
+    }
+
+    pub fn vram(&self) -> &[u8; SCREEN_WIDTH * SCREEN_HEIGHT] {
+        &self.vram
+    }
+}
+
+impl Chip8 {
     fn add_with_carry(&mut self, x: usize, y: usize) {
         let (sum, overflow) = self.registers[x].overflowing_add(self.registers[y]);
         self.registers[0xF] = overflow as u8;
@@ -145,11 +158,32 @@ impl Chip8 {
         }
         collision
     }
+
+    fn load_font(&mut self) {
+        self.ram[0x00..].clone_from_slice(&[
+            0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+            0x20, 0x60, 0x20, 0x20, 0x70, // 1
+            0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+            0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+            0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+            0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+            0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+            0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+            0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+            0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+            0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+            0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+            0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+            0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+            0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+            0xF0, 0x80, 0xF0, 0x80, 0x80, // F
+        ]);
+    }
 }
 
 impl Default for Chip8 {
     fn default() -> Self {
-        Chip8 {
+        let mut chip8 = Chip8 {
             vram: [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
             ram: [0u8; RAM_SIZE],
             registers: [0u8; NUM_REGISTERS],
@@ -159,6 +193,8 @@ impl Default for Chip8 {
             st: 0,
             pc: 0,
             sp: 0,
-        }
+        };
+        chip8.load_font();
+        chip8
     }
 }

@@ -16,10 +16,41 @@ pub struct Chip8 {
     st: u8,
     pc: u16,
     sp: u8,
+    clocks: usize,
 }
 
 impl Chip8 {
-    pub fn process_opcode(&mut self) {
+    pub fn load_rom(&mut self, rom: &[u8]) {
+        self.ram[0x200..0x200 + rom.len()].clone_from_slice(rom);
+    }
+
+    pub fn clock(&mut self) {
+        self.process_opcode();
+        if self.clocks % 4 == 0 {
+            self.clock_dt();
+            self.clock_st();
+        }
+        self.clocks += 1;
+    }
+
+    pub fn vram(&self) -> &[u8; SCREEN_WIDTH * SCREEN_HEIGHT] {
+        &self.vram
+    }
+}
+
+impl Chip8 {
+    fn clock_dt(&mut self) {
+        self.dt = self.dt.checked_sub(1).unwrap_or(0);
+    }
+
+    fn clock_st(&mut self) {
+        if self.st > 0 {
+            // todo!("raise beep request");
+            self.st -= 1;
+        }
+    }
+
+    fn process_opcode(&mut self) {
         let opcode =
             (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
 
@@ -78,23 +109,6 @@ impl Chip8 {
         }
     }
 
-    pub fn tick_dt(&mut self) {
-        self.dt = self.dt.checked_sub(1).unwrap_or(0);
-    }
-
-    pub fn tick_st(&mut self) {
-        if self.st > 0 {
-            // todo!("raise beep request");
-            self.st -= 1;
-        }
-    }
-
-    pub fn vram(&self) -> &[u8; SCREEN_WIDTH * SCREEN_HEIGHT] {
-        &self.vram
-    }
-}
-
-impl Chip8 {
     fn add_with_carry(&mut self, x: usize, y: usize) {
         let (sum, overflow) = self.registers[x].overflowing_add(self.registers[y]);
         self.registers[0xF] = overflow as u8;
@@ -160,7 +174,7 @@ impl Chip8 {
     }
 
     fn load_font(&mut self) {
-        self.ram[0x00..].clone_from_slice(&[
+        self.ram[..16 * 5].clone_from_slice(&[
             0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
             0x20, 0x60, 0x20, 0x20, 0x70, // 1
             0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -193,6 +207,7 @@ impl Default for Chip8 {
             st: 0,
             pc: 0,
             sp: 0,
+            clocks: 0,
         };
         chip8.load_font();
         chip8

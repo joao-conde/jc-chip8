@@ -3,10 +3,11 @@ use wasm_bindgen::prelude::*;
 
 pub const SCREEN_WIDTH: usize = 64;
 pub const SCREEN_HEIGHT: usize = 32;
-pub const RAM_SIZE: usize = 4 * 1024;
-pub const STACK_SIZE: usize = 16;
-pub const NUM_REGISTERS: usize = 16;
-pub const NUM_KEYS: usize = 16;
+
+const RAM_SIZE: usize = 4 * 1024;
+const STACK_SIZE: usize = 16;
+const NUM_REGISTERS: usize = 16;
+const NUM_KEYS: usize = 16;
 
 #[wasm_bindgen]
 pub struct Chip8 {
@@ -17,13 +18,33 @@ pub struct Chip8 {
     i: u16,
     dt: u8,
     st: u8,
-    pub pc: u16,
+    pc: u16,
     sp: u8,
     clocks: usize,
     keys: [bool; NUM_KEYS],
 }
 
+#[wasm_bindgen]
 impl Chip8 {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Chip8 {
+        let mut chip8 = Chip8 {
+            vram: [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
+            ram: [0u8; RAM_SIZE],
+            registers: [0u8; NUM_REGISTERS],
+            stack: [0u16; STACK_SIZE],
+            i: 0,
+            dt: 0,
+            st: 0,
+            pc: 0x200,
+            sp: 0,
+            clocks: 0,
+            keys: [false; NUM_KEYS],
+        };
+        chip8.load_font();
+        chip8
+    }
+
     pub fn load_rom(&mut self, rom: &[u8]) {
         self.ram[0x200..0x200 + rom.len()].clone_from_slice(rom);
     }
@@ -37,12 +58,16 @@ impl Chip8 {
         self.clocks += 1;
     }
 
-    pub fn vram(&self) -> &[u8; SCREEN_WIDTH * SCREEN_HEIGHT] {
-        &self.vram
+    pub fn wasm_vram(&self) -> Vec<u8> {
+        self.vram.to_vec()
     }
 }
 
 impl Chip8 {
+    pub fn vram(&self) -> &[u8; SCREEN_WIDTH * SCREEN_HEIGHT] {
+        &self.vram
+    }
+
     fn process_opcode(&mut self) {
         let opcode =
             (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
@@ -219,25 +244,5 @@ impl Chip8 {
         let mut n = [0];
         getrandom(&mut n).unwrap();
         n[0]
-    }
-}
-
-impl Default for Chip8 {
-    fn default() -> Self {
-        let mut chip8 = Chip8 {
-            vram: [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
-            ram: [0u8; RAM_SIZE],
-            registers: [0u8; NUM_REGISTERS],
-            stack: [0u16; STACK_SIZE],
-            i: 0,
-            dt: 0,
-            st: 0,
-            pc: 0x200,
-            sp: 0,
-            clocks: 0,
-            keys: [false; NUM_KEYS],
-        };
-        chip8.load_font();
-        chip8
     }
 }

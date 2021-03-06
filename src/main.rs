@@ -6,7 +6,7 @@ fn main() {
     let mut rom = Vec::new();
     file.read_to_end(&mut rom).unwrap();
 
-    let mut chip8 = chip8::Chip8::default();
+    let mut chip8 = chip8::Chip8::new();
     chip8.load_rom(&rom);
 
     for _ in 0..1000000 {

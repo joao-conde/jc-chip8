@@ -17,3 +17,7 @@ I first wrote it in TypeScript: [chip8-ts](https://github.com/joao-conde/chip8-e
 9. http://emulator101.com/
 10. https://www.taniarascia.com/writing-an-emulator-in-javascript-chip8/
 11. https://johnearnest.github.io/chip8Archive/
+
+### Building
+
+`wasm-pack build --release --target=web -d demo/`

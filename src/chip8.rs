@@ -15,7 +15,7 @@ pub struct Chip8 {
     i: u16,
     dt: u8,
     st: u8,
-    pc: u16,
+    pub pc: u16,
     sp: u8,
     clocks: usize,
     keys: [bool; NUM_KEYS],
@@ -46,15 +46,19 @@ impl Chip8 {
             (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
         self.pc += 2;
 
+        let id = opcode & 0xF000;
         let addr = opcode & 0x0FFF;
         let nibble = (opcode & 0x000F) as u8;
         let x = (opcode >> 8 & 0xF) as usize;
         let y = (opcode >> 4 & 0xF) as usize;
         let byte = (opcode & 0x00FF) as u8;
 
-        match opcode {
-            0x00E0 => self.vram = [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
-            0x00EE => self.return_subroutine(),
+        match id {
+            0x0000 => match byte {
+                0xE0 => self.vram = [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
+                0xEE => self.return_subroutine(),
+                _ => self.unknown_opcode(opcode),
+            },
             0x1000 => self.pc = addr,
             0x2000 => self.call_subroutine(addr),
             0x3000 => self.skip_if(self.registers[x] == byte),
@@ -62,15 +66,18 @@ impl Chip8 {
             0x5000 => self.skip_if(self.registers[x] == self.registers[y]),
             0x6000 => self.registers[x] = byte,
             0x7000 => self.registers[x] += byte,
-            0x8000 => self.registers[x] = self.registers[y],
-            0x8001 => self.registers[x] |= self.registers[y],
-            0x8002 => self.registers[x] &= self.registers[y],
-            0x8003 => self.registers[x] ^= self.registers[y],
-            0x8004 => self.add_with_carry(x, y),
-            0x8005 => self.registers[x] = self.sub_not_borrow(x, y),
-            0x8006 => self.shift_right(x),
-            0x8007 => self.registers[x] = self.sub_not_borrow(y, x),
-            0x800E => self.shift_left(x),
+            0x8000 => match nibble {
+                0x0 => self.registers[x] = self.registers[y],
+                0x1 => self.registers[x] |= self.registers[y],
+                0x2 => self.registers[x] &= self.registers[y],
+                0x3 => self.registers[x] ^= self.registers[y],
+                0x4 => self.add_with_carry(x, y),
+                0x5 => self.registers[x] = self.sub_not_borrow(x, y),
+                0x6 => self.shift_right(x),
+                0x7 => self.registers[x] = self.sub_not_borrow(y, x),
+                0xE => self.shift_left(x),
+                _ => self.unknown_opcode(opcode),
+            },
             0x9000 => self.skip_if(self.registers[x] != self.registers[y]),
             0xA000 => self.i = addr,
             0xB000 => self.pc = addr + self.registers[0] as u16,
@@ -82,20 +89,26 @@ impl Chip8 {
                     nibble as usize,
                 ) as u8
             }
-            0xE09E => self.skip_if(self.keys[self.registers[x] as usize]),
-            0xE0A1 => self.skip_if(!self.keys[self.registers[x] as usize]),
-            0xF007 => self.registers[x] = self.dt,
-            0xF00A => self.pause_if(self.keys.iter().all(|k| !k)),
-            0xF015 => self.dt = self.registers[x],
-            0xF018 => self.st = self.registers[x],
-            0xF01E => self.i += self.registers[x] as u16,
-            0xF029 => self.i = self.registers[x] as u16 * 5,
-            0xF033 => self.store_bcd(x),
-            0xF055 => self.ram[self.i as usize..self.i as usize + x]
-                .clone_from_slice(&self.registers[0..x]),
-            0xF065 => self.registers[0..x]
-                .clone_from_slice(&self.ram[self.i as usize..self.i as usize + x]),
-            _ => println!("unknown opcode 0x{:02X}", opcode),
+            0xE000 => match byte {
+                0x9E => self.skip_if(self.keys[self.registers[x] as usize]),
+                0xA1 => self.skip_if(!self.keys[self.registers[x] as usize]),
+                _ => self.unknown_opcode(opcode),
+            },
+            0xF000 => match byte {
+                0x07 => self.registers[x] = self.dt,
+                0x0A => self.pause_if(self.keys.iter().all(|k| !k)),
+                0x15 => self.dt = self.registers[x],
+                0x18 => self.st = self.registers[x],
+                0x1E => self.i += self.registers[x] as u16,
+                0x29 => self.i = self.registers[x] as u16 * 5,
+                0x33 => self.store_bcd(x),
+                0x55 => self.ram[self.i as usize..self.i as usize + x]
+                    .clone_from_slice(&self.registers[0..x]),
+                0x65 => self.registers[0..x]
+                    .clone_from_slice(&self.ram[self.i as usize..self.i as usize + x]),
+                _ => self.unknown_opcode(opcode),
+            },
+            _ => self.unknown_opcode(opcode),
         }
     }
 
@@ -107,7 +120,7 @@ impl Chip8 {
 
     fn sub_not_borrow(&mut self, x: usize, y: usize) -> u8 {
         self.registers[0xF] = (self.registers[x] <= self.registers[y]) as u8;
-        self.registers[x] - self.registers[y]
+        self.registers[x].saturating_sub(self.registers[y])
     }
 
     fn call_subroutine(&mut self, addr: u16) {
@@ -163,7 +176,7 @@ impl Chip8 {
             for x in 0..8 {
                 let addr = (y0 + y) * SCREEN_WIDTH + x0 + x;
                 let prev = self.vram[addr];
-                self.vram[addr] ^= sprite & (0x80 >> x);
+                self.vram[addr] ^= (sprite & (0x80 >> x)) >> (7 - x);
                 collision = self.vram[addr] == 0 && prev == 1;
             }
         }
@@ -189,6 +202,10 @@ impl Chip8 {
             0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
             0xF0, 0x80, 0xF0, 0x80, 0x80, // F
         ]);
+    }
+
+    fn unknown_opcode(&self, opcode: u16) {
+        println!("unknown opcode 0x{:04X}", opcode)
     }
 }
 

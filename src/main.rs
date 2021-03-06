@@ -2,7 +2,7 @@ use jc_chip8::chip8::Chip8;
 use std::{fs::File, io::Read};
 
 fn main() {
-    let mut file = File::open("roms/Pong.ch8").unwrap();
+    let mut file = File::open("roms/test/BC_test.ch8").unwrap();
     let mut rom = Vec::new();
     file.read_to_end(&mut rom).unwrap();
 
@@ -13,5 +13,11 @@ fn main() {
         chip8.clock();
     }
 
-    println!("{:?}", chip8.vram());
+    let vram = chip8.vram();
+    for y in 0..32 {
+        for x in 0..64 {
+            print!("{}", vram[y * 64 + x])
+        }
+        println!()
+    }
 }

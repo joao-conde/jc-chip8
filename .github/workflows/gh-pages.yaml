@@ -12,7 +12,8 @@ jobs:
           persist-credentials: false
 
       - name: Install
-        run: wasm-pack build --release --target=web -d demo/
+        - run: cargo install wasm-pack
+        - run: wasm-pack build --release --target=web -d demo/
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1

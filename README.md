@@ -1,6 +1,6 @@
-# CHIP-8 emulator
+# Chip-8 emulator
 
-CHIP-8 emulator written in Rust and compiled to WASM.
+Chip-8 emulator written in Rust and compiled to WASM.
 
 I first wrote it in TypeScript: [chip8-ts](https://github.com/joao-conde/chip8-emulator-ts). Re-writing it in Rust because I love the language and to explore WASM compilation which I will use in my NES emulator.
 
@@ -20,6 +20,6 @@ I first wrote it in TypeScript: [chip8-ts](https://github.com/joao-conde/chip8-e
 
 ### Building
 
-`wasm-pack build --release --target=web -d demo/`
+`wasm-pack build --release --target=web --no-typescript -d demo/`
 
 `git subtree push --prefix demo origin gh-pages`

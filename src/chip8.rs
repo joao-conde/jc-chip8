@@ -35,43 +35,62 @@ impl Chip8 {
         let y = (opcode >> 4 & 0xF) as u8;
         let byte = (opcode & 0x00FF) as u8;
 
-        match id {
+        match opcode {
             0x00E0 => self.vram = [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
             0x00EE => self.return_subroutine(),
             0x1000 => self.pc = addr,
             0x2000 => self.call_subroutine(addr),
-            0x3000 => self.skip_if_equal(x, byte),
-            0x4000 => self.skip_if_not_equal(x, byte),
-            0x5000 => self.skip_if_equal(x, self.registers[y as usize]),
+            0x3000 => self.skip_if_equal(x as usize, byte),
+            0x4000 => self.skip_if_not_equal(x as usize, byte),
+            0x5000 => self.skip_if_equal(x as usize, self.registers[y as usize]),
             0x6000 => self.registers[x as usize] = byte,
             0x7000 => self.registers[x as usize] += byte,
             0x8000 => self.registers[x as usize] = self.registers[y as usize],
             0x8001 => self.registers[x as usize] |= self.registers[y as usize],
             0x8002 => self.registers[x as usize] &= self.registers[y as usize],
             0x8003 => self.registers[x as usize] ^= self.registers[y as usize],
-            0x8004 => self.add_with_carry(x, y),
-            0x8005 => self.registers[x as usize] = self.sub_not_borrow(x, y),
-            0x8006 => self.shift_right(x),
-            0x8007 => self.registers[x as usize] = self.sub_not_borrow(y, x),
-            0x800E => self.shift_left(x),
-            0x9000 => self.skip_if_not_equal(x, self.registers[y as usize]),
+            0x8004 => self.add_with_carry(x as usize, y as usize),
+            0x8005 => self.registers[x as usize] = self.sub_not_borrow(x as usize, y as usize),
+            0x8006 => self.shift_right(x as usize),
+            0x8007 => self.registers[x as usize] = self.sub_not_borrow(y as usize, x as usize),
+            0x800E => self.shift_left(x as usize),
+            0x9000 => self.skip_if_not_equal(x as usize, self.registers[y as usize]),
             0xA000 => self.i = addr,
             0xB000 => self.pc = addr + self.registers[0] as u16,
-            0xC000 => self.registers[x as usize] = byte & random::<u8>() & 0xFF,
+            0xC000 => self.registers[x as usize] = byte & random::<u8>(),
+            0xD000 => {
+                self.registers[0xF] = self.draw_sprite(
+                    self.registers[x as usize] as usize,
+                    self.registers[y as usize] as usize,
+                    nibble as usize,
+                ) as u8
+            }
+            0xE09E => todo!("keyboard"),
+            0xE0A1 => todo!("keyboard"),
+            0xF007 => self.registers[x as usize] = self.dt,
+            0xF00A => todo!("keyboard"),
+            0xF015 => self.dt = self.registers[x as usize],
+            0xF018 => self.st = self.registers[x as usize],
+            0xF01E => self.i += self.registers[x as usize] as u16,
+            0xF029 => self.i = self.registers[x as usize] as u16 * 5,
+            0xF033 => self.store_bcd(x as usize),
+            0xF055 => self.ram[self.i as usize..self.i as usize + x as usize]
+                .clone_from_slice(&self.registers[0..x as usize]),
+            0xF065 => self.registers[0..x as usize]
+                .clone_from_slice(&self.ram[self.i as usize..self.i as usize + x as usize]),
             _ => panic!("unknown instruction"),
         }
     }
 
-    fn add_with_carry(&mut self, x: u8, y: u8) {
-        let (sum, overflow) =
-            self.registers[x as usize].overflowing_add(self.registers[y as usize]);
+    fn add_with_carry(&mut self, x: usize, y: usize) {
+        let (sum, overflow) = self.registers[x].overflowing_add(self.registers[y]);
         self.registers[0xF] = overflow as u8;
-        self.registers[x as usize] = sum;
+        self.registers[x] = sum;
     }
 
-    fn sub_not_borrow(&mut self, x: u8, y: u8) -> u8 {
-        self.registers[0xF] = !(self.registers[x as usize] > self.registers[y as usize]) as u8;
-        self.registers[x as usize] - self.registers[y as usize]
+    fn sub_not_borrow(&mut self, x: usize, y: usize) -> u8 {
+        self.registers[0xF] = (self.registers[x] <= self.registers[y]) as u8;
+        self.registers[x] - self.registers[y]
     }
 
     fn call_subroutine(&mut self, addr: u16) {
@@ -85,24 +104,30 @@ impl Chip8 {
         self.pc = self.stack[self.sp as usize];
     }
 
-    fn shift_right(&mut self, x: u8) {
+    fn shift_right(&mut self, x: usize) {
         self.registers[0xF] = self.registers[x as usize] & 0x01;
-        self.registers[x as usize] >>= 1;
+        self.registers[x] >>= 1;
     }
 
-    fn shift_left(&mut self, x: u8) {
+    fn shift_left(&mut self, x: usize) {
         self.registers[0xF] = (self.registers[x as usize] & 0x08) >> 7;
-        self.registers[x as usize] <<= 1;
+        self.registers[x] <<= 1;
     }
 
-    fn skip_if_equal(&mut self, x: u8, val: u8) {
-        if self.registers[x as usize] == val {
+    fn store_bcd(&mut self, x: usize) {
+        self.ram[self.i as usize] = self.registers[x] / 100;
+        self.ram[self.i as usize + 1] = (self.registers[x] / 10) % 10;
+        self.ram[self.i as usize + 2] = self.registers[x] % 10;
+    }
+
+    fn skip_if_equal(&mut self, x: usize, val: u8) {
+        if self.registers[x] == val {
             self.pc += 2;
         }
     }
 
-    fn skip_if_not_equal(&mut self, x: u8, val: u8) {
-        if self.registers[x as usize] == val {
+    fn skip_if_not_equal(&mut self, x: usize, val: u8) {
+        if self.registers[x] == val {
             self.pc += 2;
         }
     }

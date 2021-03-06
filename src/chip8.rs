@@ -58,16 +58,12 @@ impl Chip8 {
         self.clocks += 1;
     }
 
-    pub fn wasm_vram(&self) -> Vec<u8> {
+    pub fn vram(&self) -> Vec<u8> {
         self.vram.to_vec()
     }
 }
 
 impl Chip8 {
-    pub fn vram(&self) -> &[u8; SCREEN_WIDTH * SCREEN_HEIGHT] {
-        &self.vram
-    }
-
     fn process_opcode(&mut self) {
         let opcode =
             (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;

@@ -4,6 +4,6 @@ wasm().then(() => {
     const chip8 = new Chip8();
     // chip8.load_rom();
     chip8.clock();
-    console.log(chip8.wasm_vram())
+    console.log(chip8.vram())
 });
 

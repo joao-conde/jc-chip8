@@ -2,7 +2,7 @@ use jc_chip8::chip8;
 use std::{fs::File, io::Read};
 
 fn main() {
-    let mut file = File::open("roms/test/BC_test.ch8").unwrap();
+    let mut file = File::open("demo/roms/test/BC_test.ch8").unwrap();
     let mut rom = Vec::new();
     file.read_to_end(&mut rom).unwrap();
 

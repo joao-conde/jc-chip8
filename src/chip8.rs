@@ -27,6 +27,7 @@ pub struct Chip8 {
 
 #[wasm_bindgen]
 impl Chip8 {
+    #[wasm_bindgen(constructor)]
     pub fn new() -> Chip8 {
         let mut chip8 = Chip8 {
             vram: [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],

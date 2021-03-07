@@ -17,8 +17,14 @@ const videoBuff = new DataView(image.data.buffer);
 
     const clockFreq = 240 //Hz
     const fps = 144 //FPS
-    window.setInterval(() => chip8.clock(), 1000 / clockFreq)
-    window.setInterval(() => render(chip8.vram()), 1000 / fps)
+
+    while (true) {
+        chip8.clock();
+        // render(chip8.vram());
+    }
+
+    // window.setInterval(() => chip8.clock(), 1000 / clockFreq)
+    // window.setInterval(() => render(chip8.vram()), 1000 / fps)
 })();
 
 function getROM(rom) {
@@ -32,9 +38,7 @@ function getROM(rom) {
 }
 
 function render(vram) {
-    for (let i = 0, j = 0; i < vram.length; i++, j += 4) {
-        videoBuff.setUint32(j, vram[i] === 1 ? pixelSetColor : pixelUnsetColor);
-    }
+    for (let i = 0, j = 0; i < vram.length; i++, j += 4) videoBuff.setUint32(j, vram[i] === 1 ? pixelSetColor : pixelUnsetColor)
     ctx.putImageData(image, 0, 0)
     ctx.drawImage(canvas, 0, 0)
 }

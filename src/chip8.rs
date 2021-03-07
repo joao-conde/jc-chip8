@@ -22,6 +22,7 @@ pub struct Chip8 {
     sp: u8,
     clocks: usize,
     keys: [bool; NUM_KEYS],
+    beep: bool,
 }
 
 #[wasm_bindgen]
@@ -40,6 +41,7 @@ impl Chip8 {
             sp: 0,
             clocks: 0,
             keys: [false; NUM_KEYS],
+            beep: false,
         };
         chip8.load_font();
         chip8
@@ -80,7 +82,7 @@ impl Chip8 {
             0x0000 => match byte {
                 0xE0 => self.vram = [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
                 0xEE => self.return_subroutine(),
-                _ => Chip8::unknown_opcode(opcode),
+                _ => println!("unknown opcode 0x{:04X}", opcode),
             },
             0x1000 => self.pc = addr,
             0x2000 => self.call_subroutine(addr),
@@ -94,12 +96,12 @@ impl Chip8 {
                 0x1 => self.registers[x] |= self.registers[y],
                 0x2 => self.registers[x] &= self.registers[y],
                 0x3 => self.registers[x] ^= self.registers[y],
-                0x4 => self.add_with_carry(x, y),
-                0x5 => self.registers[x] = self.sub_not_borrow(x, y),
+                0x4 => self.add(x, y),
+                0x5 => self.registers[x] = self.sub(x, y),
                 0x6 => self.shift_right(x),
-                0x7 => self.registers[x] = self.sub_not_borrow(y, x),
+                0x7 => self.registers[x] = self.sub(y, x),
                 0xE => self.shift_left(x),
-                _ => Chip8::unknown_opcode(opcode),
+                _ => println!("unknown opcode 0x{:04X}", opcode),
             },
             0x9000 => self.skip_if(self.registers[x] != self.registers[y]),
             0xA000 => self.i = addr,
@@ -113,7 +115,7 @@ impl Chip8 {
             0xE000 => match byte {
                 0x9E => self.skip_if(self.keys[self.registers[x] as usize]),
                 0xA1 => self.skip_if(!self.keys[self.registers[x] as usize]),
-                _ => Chip8::unknown_opcode(opcode),
+                _ => println!("unknown opcode 0x{:04X}", opcode),
             },
             0xF000 => match byte {
                 0x07 => self.registers[x] = self.dt,
@@ -129,19 +131,19 @@ impl Chip8 {
                     self.registers[0..=x]
                         .clone_from_slice(&self.ram[self.i as usize..=self.i as usize + x]);
                 }
-                _ => Chip8::unknown_opcode(opcode),
+                _ => println!("unknown opcode 0x{:04X}", opcode),
             },
-            _ => Chip8::unknown_opcode(opcode),
+            _ => println!("unknown opcode 0x{:04X}", opcode),
         }
     }
 
-    fn add_with_carry(&mut self, x: usize, y: usize) {
+    fn add(&mut self, x: usize, y: usize) {
         let (sum, overflow) = self.registers[x].overflowing_add(self.registers[y]);
         self.registers[0xF] = overflow as u8;
         self.registers[x] = sum;
     }
 
-    fn sub_not_borrow(&mut self, x: usize, y: usize) -> u8 {
+    fn sub(&mut self, x: usize, y: usize) -> u8 {
         self.registers[0xF] = (self.registers[x] > self.registers[y]) as u8;
         self.registers[x].saturating_sub(self.registers[y])
     }
@@ -186,10 +188,8 @@ impl Chip8 {
     }
 
     fn clock_st(&mut self) {
-        if self.st > 0 {
-            // todo!("raise beep request");
-            self.st -= 1;
-        }
+        self.st = self.st.saturating_sub(1);
+        self.beep = self.st > 0;
     }
 
     fn draw_sprite(&mut self, x0: usize, y0: usize, height: usize) {
@@ -232,10 +232,7 @@ impl Chip8 {
         ]);
     }
 
-    fn unknown_opcode(opcode: u16) {
-        println!("unknown opcode 0x{:04X}", opcode)
-    }
-
+    // rand crate does not compile to wasm32-unknown-unknown
     fn rand() -> u8 {
         let mut n = [0];
         getrandom(&mut n).unwrap();

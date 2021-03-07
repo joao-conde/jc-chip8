@@ -16,13 +16,9 @@ const videoBuff = new DataView(image.data.buffer);
     chip8.load_rom(rom);
 
     const clockFreq = 240 //Hz
-    const fps = 144 //frames per second
-    window.setInterval(() => {
-        chip8.clock()
-        const vram = chip8.vram()
-        render(vram)
-    }, 1000 / clockFreq)
-    // window.setInterval(() => render(chip8.vram()), 1000 / fps)
+    const fps = 144 //FPS
+    window.setInterval(() => chip8.clock(), 1000 / clockFreq)
+    window.setInterval(() => render(chip8.vram()), 1000 / fps)
 })();
 
 function getROM(rom) {
@@ -30,10 +26,7 @@ function getROM(rom) {
         const request = new XMLHttpRequest();
         request.open("GET", `roms/${rom}`, true); 
         request.responseType = 'arraybuffer'
-        request.onload = () => {
-            const result = request.response; 
-            resolve(result)
-        }
+        request.onload = () => resolve(request.response)
         request.send()
     })
 }

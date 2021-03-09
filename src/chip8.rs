@@ -1,5 +1,4 @@
 use getrandom::getrandom;
-use wasm_bindgen::prelude::*;
 
 pub const SCREEN_WIDTH: usize = 64;
 pub const SCREEN_HEIGHT: usize = 32;
@@ -9,7 +8,6 @@ const STACK_SIZE: usize = 16;
 const NUM_REGISTERS: usize = 16;
 const NUM_KEYS: usize = 16;
 
-#[wasm_bindgen]
 pub struct Chip8 {
     vram: [u8; SCREEN_WIDTH * SCREEN_HEIGHT],
     ram: [u8; RAM_SIZE],
@@ -25,9 +23,7 @@ pub struct Chip8 {
     beep: bool,
 }
 
-#[wasm_bindgen]
 impl Chip8 {
-    #[wasm_bindgen(constructor)]
     pub fn new() -> Chip8 {
         let mut chip8 = Chip8 {
             vram: [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],

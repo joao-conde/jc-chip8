@@ -1,3 +1,4 @@
+use console_error_panic_hook;
 use getrandom::getrandom;
 use wasm_bindgen::prelude::*;
 
@@ -29,6 +30,7 @@ pub struct Chip8 {
 impl Chip8 {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Chip8 {
+        console_error_panic_hook::set_once();
         let mut chip8 = Chip8 {
             vram: [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
             ram: [0u8; RAM_SIZE],
@@ -67,12 +69,29 @@ impl Chip8 {
         self.beep = self.st > 0;
     }
 
+    #[wasm_bindgen(js_name = "keyPress")]
+    pub fn key_press(&mut self, key: u8) {
+        if key <= 0x0F {
+            self.last_key = key;
+            self.keys[key as usize] = true;
+        }
+    }
+
+    #[wasm_bindgen(js_name = "keyLift")]
+    pub fn key_lift(&mut self, key: u8) {
+        if key <= 0x0F {
+            self.keys[key as usize] = false;
+        }
+    }
+
     pub fn vram(&self) -> Vec<u8> {
         self.vram.to_vec()
     }
 
-    pub fn beep(&self) -> bool {
-        self.beep
+    pub fn beep(&mut self) -> bool {
+        let beep = self.beep;
+        self.beep = false;
+        beep
     }
 }
 
@@ -203,10 +222,12 @@ impl Chip8 {
             for x in 0..8 {
                 if (sprite & (0x80 >> x)) != 0 {
                     let addr = (y0 + y) * SCREEN_WIDTH + x0 + x;
-                    if self.vram[addr] == 1 {
-                        collision = true
+                    if addr < SCREEN_WIDTH * SCREEN_HEIGHT {
+                        if self.vram[addr] == 1 {
+                            collision = true
+                        }
+                        self.vram[addr] ^= 1
                     }
-                    self.vram[addr] ^= 1
                 }
             }
         }

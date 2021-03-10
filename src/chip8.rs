@@ -1,4 +1,5 @@
 use getrandom::getrandom;
+use wasm_bindgen::prelude::*;
 
 pub const SCREEN_WIDTH: usize = 64;
 pub const SCREEN_HEIGHT: usize = 32;
@@ -8,6 +9,7 @@ const STACK_SIZE: usize = 16;
 const NUM_REGISTERS: usize = 16;
 const NUM_KEYS: usize = 16;
 
+#[wasm_bindgen]
 pub struct Chip8 {
     vram: [u8; SCREEN_WIDTH * SCREEN_HEIGHT],
     ram: [u8; RAM_SIZE],
@@ -23,7 +25,9 @@ pub struct Chip8 {
     beep: bool,
 }
 
+#[wasm_bindgen]
 impl Chip8 {
+    #[wasm_bindgen(constructor)]
     pub fn new() -> Chip8 {
         let mut chip8 = Chip8 {
             vram: [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
@@ -43,8 +47,8 @@ impl Chip8 {
         chip8
     }
 
-    pub fn load_rom(&mut self, rom: &[u8]) {
-        self.ram[0x200..0x200 + rom.len()].clone_from_slice(rom);
+    pub fn load_rom(&mut self, rom: Vec<u8>) {
+        self.ram[0x200..0x200 + rom.len()].clone_from_slice(&rom);
     }
 
     pub fn clock(&mut self) {
@@ -58,6 +62,10 @@ impl Chip8 {
 
     pub fn vram(&self) -> Vec<u8> {
         self.vram.to_vec()
+    }
+
+    pub fn ram(&self) -> Vec<u8> {
+        self.ram.to_vec()
     }
 }
 
@@ -78,7 +86,7 @@ impl Chip8 {
             0x0000 => match byte {
                 0xE0 => self.vram = [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
                 0xEE => self.return_subroutine(),
-                _ => println!("unknown opcode 0x{:04X}", opcode),
+                _ => panic!("unknown opcode 0x{:04X}", opcode),
             },
             0x1000 => self.pc = addr,
             0x2000 => self.call_subroutine(addr),
@@ -97,7 +105,7 @@ impl Chip8 {
                 0x6 => self.shift_right(x),
                 0x7 => self.registers[x] = self.sub(y, x),
                 0xE => self.shift_left(x),
-                _ => println!("unknown opcode 0x{:04X}", opcode),
+                _ => panic!("unknown opcode 0x{:04X}", opcode),
             },
             0x9000 => self.skip_if(self.registers[x] != self.registers[y]),
             0xA000 => self.i = addr,
@@ -111,7 +119,7 @@ impl Chip8 {
             0xE000 => match byte {
                 0x9E => self.skip_if(self.keys[self.registers[x] as usize]),
                 0xA1 => self.skip_if(!self.keys[self.registers[x] as usize]),
-                _ => println!("unknown opcode 0x{:04X}", opcode),
+                _ => panic!("unknown opcode 0x{:04X}", opcode),
             },
             0xF000 => match byte {
                 0x07 => self.registers[x] = self.dt,
@@ -127,9 +135,9 @@ impl Chip8 {
                     self.registers[0..=x]
                         .clone_from_slice(&self.ram[self.i as usize..=self.i as usize + x]);
                 }
-                _ => println!("unknown opcode 0x{:04X}", opcode),
+                _ => panic!("unknown opcode 0x{:04X}", opcode),
             },
-            _ => println!("unknown opcode 0x{:04X}", opcode),
+            _ => panic!("unknown opcode 0x{:04X}", opcode),
         }
     }
 

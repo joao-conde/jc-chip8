@@ -1,4 +1,3 @@
-
 let wasm;
 
 const heap = new Array(32).fill(undefined);
@@ -352,4 +351,3 @@ async function init(input) {
 }
 
 export default init;
-

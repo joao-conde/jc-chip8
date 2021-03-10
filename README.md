@@ -6,7 +6,7 @@ I first wrote it in TypeScript: [chip8-ts](https://github.com/joao-conde/chip8-e
 
 ## Building
 
-At `Cargo.toml` level, use the following to build and output to the demo directory using [wasm-pack](https://rustwasm.github.io/wasm-pack/):
+At `Cargo.toml` level, use the following to build and output to the `demo` directory using [wasm-pack](https://rustwasm.github.io/wasm-pack/):
 
 ```bash
 wasm-pack build --release --target=web --no-typescript -d demo/

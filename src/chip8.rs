@@ -20,9 +20,9 @@ pub struct Chip8 {
     st: u8,
     pc: u16,
     sp: u8,
-    clocks: usize,
-    keys: [bool; NUM_KEYS],
     beep: bool,
+    last_key: u8,
+    keys: [bool; NUM_KEYS],
 }
 
 #[wasm_bindgen]
@@ -39,38 +39,46 @@ impl Chip8 {
             st: 0,
             pc: 0x200,
             sp: 0,
-            clocks: 0,
-            keys: [false; NUM_KEYS],
             beep: false,
+            last_key: 0x00,
+            keys: [false; NUM_KEYS],
         };
         chip8.load_font();
         chip8
     }
 
+    #[wasm_bindgen(js_name = "loadROM")]
     pub fn load_rom(&mut self, rom: &[u8]) {
         self.ram[0x200..0x200 + rom.len()].clone_from_slice(&rom);
     }
 
     pub fn clock(&mut self) {
         self.process_opcode();
-        if self.clocks % 4 == 0 {
-            self.clock_dt();
-            self.clock_st();
-        }
-        self.clocks += 1;
+    }
+
+    #[wasm_bindgen(js_name = "clockDT")]
+    pub fn clock_dt(&mut self) {
+        self.dt = self.dt.saturating_sub(1);
+    }
+
+    #[wasm_bindgen(js_name = "clockST")]
+    pub fn clock_st(&mut self) {
+        self.st = self.st.saturating_sub(1);
+        self.beep = self.st > 0;
     }
 
     pub fn vram(&self) -> Vec<u8> {
         self.vram.to_vec()
     }
+
+    pub fn beep(&self) -> bool {
+        self.beep
+    }
 }
 
 impl Chip8 {
     fn process_opcode(&mut self) {
-        let opcode =
-            (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
-        self.pc += 2;
-
+        let opcode = self.fetch_opcode();
         let id = opcode & 0xF000;
         let addr = opcode & 0x0FFF;
         let nibble = (opcode & 0x000F) as u8;
@@ -119,7 +127,7 @@ impl Chip8 {
             },
             0xF000 => match byte {
                 0x07 => self.registers[x] = self.dt,
-                0x0A => self.pause_if(self.keys.iter().all(|k| !k)),
+                0x0A => self.wait_for_key(x),
                 0x15 => self.dt = self.registers[x],
                 0x18 => self.st = self.registers[x],
                 0x1E => self.i += self.registers[x] as u16,
@@ -179,17 +187,12 @@ impl Chip8 {
         self.pc += if skip { 2 } else { 0 };
     }
 
-    fn pause_if(&mut self, pause: bool) {
-        self.pc -= if pause { 2 } else { 0 };
-    }
-
-    fn clock_dt(&mut self) {
-        self.dt = self.dt.saturating_sub(1);
-    }
-
-    fn clock_st(&mut self) {
-        self.st = self.st.saturating_sub(1);
-        self.beep = self.st > 0;
+    fn wait_for_key(&mut self, x: usize) {
+        if self.keys[self.last_key as usize] {
+            self.registers[x] = self.last_key;
+        } else {
+            self.pc -= 2;
+        }
     }
 
     fn draw_sprite(&mut self, x0: usize, y0: usize, height: usize) {
@@ -230,6 +233,13 @@ impl Chip8 {
             0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
             0xF0, 0x80, 0xF0, 0x80, 0x80, // F
         ]);
+    }
+
+    fn fetch_opcode(&mut self) -> u16 {
+        let opcode =
+            (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
+        self.pc += 2;
+        opcode
     }
 
     // rand crate does not compile to wasm32-unknown-unknown

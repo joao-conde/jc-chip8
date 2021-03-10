@@ -89,9 +89,7 @@ impl Chip8 {
     }
 
     pub fn beep(&mut self) -> bool {
-        let beep = self.beep;
-        self.beep = false;
-        beep
+        self.beep
     }
 }
 
@@ -220,14 +218,12 @@ impl Chip8 {
         for y in 0..height {
             let sprite = self.ram[self.i as usize + y];
             for x in 0..8 {
-                if (sprite & (0x80 >> x)) != 0 {
-                    let addr = (y0 + y) * SCREEN_WIDTH + x0 + x;
-                    if addr < SCREEN_WIDTH * SCREEN_HEIGHT {
-                        if self.vram[addr] == 1 {
-                            collision = true
-                        }
-                        self.vram[addr] ^= 1
+                let addr = (y0 + y) * SCREEN_WIDTH + x0 + x;
+                if (sprite & (0x80 >> x)) != 0 && addr < SCREEN_WIDTH * SCREEN_HEIGHT {
+                    if self.vram[addr] == 1 {
+                        collision = true
                     }
+                    self.vram[addr] ^= 1
                 }
             }
         }

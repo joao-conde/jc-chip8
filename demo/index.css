@@ -1,0 +1,15 @@
+body {
+    margin: 0px 0px 0px 0px;
+}
+
+canvas {
+    bottom: 0px;
+    left: 0px;
+    margin: auto auto auto auto;
+    max-height: 100%;
+    max-width: 100%;
+    overflow: auto;
+    position: fixed;
+    right: 0px;
+    top: 0px;
+}

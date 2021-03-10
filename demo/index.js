@@ -34,7 +34,7 @@ async function getROM(rom) {
 }
 
 function render(pixels) {
-    for (let i = 0; i < pixels.length; i++) 
+    for (let i = 0; i < pixels.length; i++)
         videoBuff.setUint32(i * 4, pixels[i] ? PIXEL_SET_COLOR : PIXEL_UNSET_COLOR);
     ctx.putImageData(image, 0, 0);
     scaledCtx.drawImage(canvas, 0, 0);

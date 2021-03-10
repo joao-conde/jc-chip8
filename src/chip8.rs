@@ -47,7 +47,7 @@ impl Chip8 {
         chip8
     }
 
-    pub fn load_rom(&mut self, rom: Vec<u8>) {
+    pub fn load_rom(&mut self, rom: &[u8]) {
         self.ram[0x200..0x200 + rom.len()].clone_from_slice(&rom);
     }
 
@@ -62,10 +62,6 @@ impl Chip8 {
 
     pub fn vram(&self) -> Vec<u8> {
         self.vram.to_vec()
-    }
-
-    pub fn ram(&self) -> Vec<u8> {
-        self.ram.to_vec()
     }
 }
 

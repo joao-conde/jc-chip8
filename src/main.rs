@@ -7,7 +7,7 @@ fn main() {
     file.read_to_end(&mut rom).unwrap();
 
     let mut chip8 = chip8::Chip8::new();
-    chip8.load_rom(rom);
+    chip8.load_rom(&rom);
 
     for i in 0..1_000_000_000u64 {
         chip8.clock();

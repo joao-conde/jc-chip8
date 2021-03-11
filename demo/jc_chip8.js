@@ -1,3 +1,4 @@
+
 let wasm;
 
 const heap = new Array(32).fill(undefined);
@@ -76,59 +77,6 @@ function handleError(f) {
         }
     };
 }
-
-let cachedTextEncoder = new TextEncoder('utf-8');
-
-const encodeString = (typeof cachedTextEncoder.encodeInto === 'function'
-    ? function (arg, view) {
-    return cachedTextEncoder.encodeInto(arg, view);
-}
-    : function (arg, view) {
-    const buf = cachedTextEncoder.encode(arg);
-    view.set(buf);
-    return {
-        read: arg.length,
-        written: buf.length
-    };
-});
-
-function passStringToWasm0(arg, malloc, realloc) {
-
-    if (realloc === undefined) {
-        const buf = cachedTextEncoder.encode(arg);
-        const ptr = malloc(buf.length);
-        getUint8Memory0().subarray(ptr, ptr + buf.length).set(buf);
-        WASM_VECTOR_LEN = buf.length;
-        return ptr;
-    }
-
-    let len = arg.length;
-    let ptr = malloc(len);
-
-    const mem = getUint8Memory0();
-
-    let offset = 0;
-
-    for (; offset < len; offset++) {
-        const code = arg.charCodeAt(offset);
-        if (code > 0x7F) break;
-        mem[ptr + offset] = code;
-    }
-
-    if (offset !== len) {
-        if (offset !== 0) {
-            arg = arg.slice(offset);
-        }
-        ptr = realloc(ptr, len, len = offset + arg.length * 3);
-        const view = getUint8Memory0().subarray(ptr + offset, ptr + len);
-        const ret = encodeString(arg, view);
-
-        offset += ret.written;
-    }
-
-    WASM_VECTOR_LEN = offset;
-    return ptr;
-}
 /**
 */
 export class Chip8 {
@@ -158,12 +106,17 @@ export class Chip8 {
         return Chip8.__wrap(ret);
     }
     /**
+    */
+    reset() {
+        wasm.chip8_reset(this.ptr);
+    }
+    /**
     * @param {Uint8Array} rom
     */
-    loadROM(rom) {
+    load_rom(rom) {
         var ptr0 = passArray8ToWasm0(rom, wasm.__wbindgen_malloc);
         var len0 = WASM_VECTOR_LEN;
-        wasm.chip8_loadROM(this.ptr, ptr0, len0);
+        wasm.chip8_load_rom(this.ptr, ptr0, len0);
     }
     /**
     */
@@ -172,25 +125,25 @@ export class Chip8 {
     }
     /**
     */
-    clockDT() {
-        wasm.chip8_clockDT(this.ptr);
+    clock_dt() {
+        wasm.chip8_clock_dt(this.ptr);
     }
     /**
     */
-    clockST() {
-        wasm.chip8_clockST(this.ptr);
-    }
-    /**
-    * @param {number} key
-    */
-    keyPress(key) {
-        wasm.chip8_keyPress(this.ptr, key);
+    clock_st() {
+        wasm.chip8_clock_st(this.ptr);
     }
     /**
     * @param {number} key
     */
-    keyLift(key) {
-        wasm.chip8_keyLift(this.ptr, key);
+    key_press(key) {
+        wasm.chip8_key_press(this.ptr, key);
+    }
+    /**
+    * @param {number} key
+    */
+    key_lift(key) {
+        wasm.chip8_key_lift(this.ptr, key);
     }
     /**
     * @returns {Uint8Array}
@@ -312,24 +265,6 @@ async function init(input) {
         var ret = getObject(arg0).subarray(arg1 >>> 0, arg2 >>> 0);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbg_new_59cb74e423758ede = function() {
-        var ret = new Error();
-        return addHeapObject(ret);
-    };
-    imports.wbg.__wbg_stack_558ba5917b466edd = function(arg0, arg1) {
-        var ret = getObject(arg1).stack;
-        var ptr0 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        var len0 = WASM_VECTOR_LEN;
-        getInt32Memory0()[arg0 / 4 + 1] = len0;
-        getInt32Memory0()[arg0 / 4 + 0] = ptr0;
-    };
-    imports.wbg.__wbg_error_4bb6c2a97407129a = function(arg0, arg1) {
-        try {
-            console.error(getStringFromWasm0(arg0, arg1));
-        } finally {
-            wasm.__wbindgen_free(arg0, arg1);
-        }
-    };
     imports.wbg.__wbindgen_throw = function(arg0, arg1) {
         throw new Error(getStringFromWasm0(arg0, arg1));
     };
@@ -351,3 +286,4 @@ async function init(input) {
 }
 
 export default init;
+

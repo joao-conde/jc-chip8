@@ -18,4 +18,4 @@ Then just serve the `demo` folder and open `index.html` in a browser.
 
 1. [Cowgod's Chip-8 Technical Reference v1.0](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM)
 2. [Wikipedia](https://en.wikipedia.org/wiki/CHIP-8)
-3. [My previous TS implementation](https://github.com/joao-conde/chip8-emulator-ts)
+3. [My previous TypeScript implementation](https://github.com/joao-conde/chip8-emulator-ts)

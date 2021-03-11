@@ -2,7 +2,7 @@
 
 Chip-8 emulator written in Rust and compilable to WASM.
 
-I first wrote it in TypeScript: [chip8-ts](https://github.com/joao-conde/chip8-emulator-ts). I decided to re-write one in Rust because I love the language and wanted to explore handling sound, video and user input with JavaScript + WASM.
+Wrote it in Rust because I love the language and wanted to explore handling sound, video and user input with JavaScript + WASM.
 
 ## Building
 

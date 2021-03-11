@@ -1,4 +1,3 @@
-use console_error_panic_hook;
 use getrandom::getrandom;
 use wasm_bindgen::prelude::*;
 
@@ -30,7 +29,6 @@ pub struct Chip8 {
 impl Chip8 {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Chip8 {
-        console_error_panic_hook::set_once();
         let mut chip8 = Chip8 {
             vram: [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
             ram: [0u8; RAM_SIZE],
@@ -49,7 +47,22 @@ impl Chip8 {
         chip8
     }
 
-    #[wasm_bindgen(js_name = "loadROM")]
+    pub fn reset(&mut self) {
+        self.vram = [0u8; SCREEN_WIDTH * SCREEN_HEIGHT];
+        self.ram = [0u8; RAM_SIZE];
+        self.registers = [0u8; NUM_REGISTERS];
+        self.stack = [0u16; STACK_SIZE];
+        self.i = 0;
+        self.dt = 0;
+        self.st = 0;
+        self.pc = 0x200;
+        self.sp = 0;
+        self.beep = false;
+        self.last_key = 0x00;
+        self.keys = [false; NUM_KEYS];
+        self.load_font();
+    }
+
     pub fn load_rom(&mut self, rom: &[u8]) {
         self.ram[0x200..0x200 + rom.len()].clone_from_slice(&rom);
     }
@@ -58,18 +71,15 @@ impl Chip8 {
         self.process_opcode();
     }
 
-    #[wasm_bindgen(js_name = "clockDT")]
     pub fn clock_dt(&mut self) {
         self.dt = self.dt.saturating_sub(1);
     }
 
-    #[wasm_bindgen(js_name = "clockST")]
     pub fn clock_st(&mut self) {
         self.st = self.st.saturating_sub(1);
         self.beep = self.st > 0;
     }
 
-    #[wasm_bindgen(js_name = "keyPress")]
     pub fn key_press(&mut self, key: u8) {
         if key <= 0x0F {
             self.last_key = key;
@@ -77,7 +87,6 @@ impl Chip8 {
         }
     }
 
-    #[wasm_bindgen(js_name = "keyLift")]
     pub fn key_lift(&mut self, key: u8) {
         if key <= 0x0F {
             self.keys[key as usize] = false;

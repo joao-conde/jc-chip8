@@ -9,6 +9,9 @@ edition = "2018"
 name = "jc_chip8"
 crate-type = ["cdylib", "rlib"]
 
+[dependencies]
+console_error_panic_hook = "0.1.6"
+
 [dependencies.getrandom]
 version = "0.2"
 features = ["js"]

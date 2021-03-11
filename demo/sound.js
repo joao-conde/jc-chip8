@@ -3,8 +3,7 @@ const snd = new Audio(data);
 snd.volume = 0.2;
 snd.muted = true;
 
-export function beep(beep) {
-    if (!beep) return;
+export function beep() {
     snd.muted = false;
     snd.play();
 }

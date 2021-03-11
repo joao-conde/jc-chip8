@@ -14,7 +14,7 @@ scaledCtx.imageSmoothingEnabled = false;
 const image = ctx.createImageData(canvas.width, canvas.height);
 const videoBuff = new DataView(image.data.buffer);
 
-export function render(pixels) {
+export function updateCanvas(pixels) {
     for (let i = 0; i < pixels.length; i++)
         videoBuff.setUint32(i * 4, pixels[i] ? PIXEL_SET_COLOR : PIXEL_UNSET_COLOR);
     ctx.putImageData(image, 0, 0);

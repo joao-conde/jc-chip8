@@ -1,18 +1,21 @@
 use getrandom::getrandom;
 use wasm_bindgen::prelude::*;
 
-pub const SCREEN_WIDTH: usize = 64;
-pub const SCREEN_HEIGHT: usize = 32;
+pub const SCREEN_PIXEL_WIDTH: usize = 64;
+pub const SCREEN_PIXEL_HEIGHT: usize = 32;
 
-const RAM_SIZE: usize = 4 * 1024;
-const STACK_SIZE: usize = 16;
-const NUM_REGISTERS: usize = 16;
 const NUM_KEYS: usize = 16;
+const NUM_REGISTERS: usize = 16;
+
+const STACK_SIZE: usize = 16;
+const RAM_BYTE_LEN: usize = 4 * 1024;
+
+const ROM_START: usize = 0x200;
 
 #[wasm_bindgen]
 pub struct Chip8 {
-    vram: [u8; SCREEN_WIDTH * SCREEN_HEIGHT],
-    ram: [u8; RAM_SIZE],
+    vram: [u8; SCREEN_PIXEL_WIDTH * SCREEN_PIXEL_HEIGHT],
+    ram: [u8; RAM_BYTE_LEN],
     registers: [u8; NUM_REGISTERS],
     stack: [u16; STACK_SIZE],
     i: u16,
@@ -29,15 +32,17 @@ pub struct Chip8 {
 impl Chip8 {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Chip8 {
+        use console_error_panic_hook;
+        console_error_panic_hook::set_once();
         let mut chip8 = Chip8 {
-            vram: [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
-            ram: [0u8; RAM_SIZE],
+            vram: [0u8; SCREEN_PIXEL_WIDTH * SCREEN_PIXEL_HEIGHT],
+            ram: [0u8; RAM_BYTE_LEN],
             registers: [0u8; NUM_REGISTERS],
             stack: [0u16; STACK_SIZE],
             i: 0,
             dt: 0,
             st: 0,
-            pc: 0x200,
+            pc: ROM_START as u16,
             sp: 0,
             beep: false,
             last_key: 0x00,
@@ -47,28 +52,21 @@ impl Chip8 {
         chip8
     }
 
-    pub fn reset(&mut self) {
-        self.vram = [0u8; SCREEN_WIDTH * SCREEN_HEIGHT];
-        self.ram = [0u8; RAM_SIZE];
-        self.registers = [0u8; NUM_REGISTERS];
-        self.stack = [0u16; STACK_SIZE];
-        self.i = 0;
-        self.dt = 0;
-        self.st = 0;
-        self.pc = 0x200;
-        self.sp = 0;
-        self.beep = false;
-        self.last_key = 0x00;
-        self.keys = [false; NUM_KEYS];
-        self.load_font();
+    pub fn pixels(&self) -> Vec<u8> {
+        self.vram.to_vec()
+    }
+
+    pub fn beep(&self) -> bool {
+        self.beep
     }
 
     pub fn load_rom(&mut self, rom: &[u8]) {
-        self.ram[0x200..0x200 + rom.len()].clone_from_slice(&rom);
+        self.ram[ROM_START..ROM_START + rom.len()].clone_from_slice(&rom);
     }
 
     pub fn clock(&mut self) {
-        self.process_opcode();
+        let opcode = self.fetch_opcode();
+        self.process_opcode(opcode);
     }
 
     pub fn clock_dt(&mut self) {
@@ -81,30 +79,21 @@ impl Chip8 {
     }
 
     pub fn key_press(&mut self, key: u8) {
-        if key <= 0x0F {
+        if key < NUM_KEYS as u8 {
             self.last_key = key;
             self.keys[key as usize] = true;
         }
     }
 
     pub fn key_lift(&mut self, key: u8) {
-        if key <= 0x0F {
+        if key < NUM_KEYS as u8 {
             self.keys[key as usize] = false;
         }
-    }
-
-    pub fn vram(&self) -> Vec<u8> {
-        self.vram.to_vec()
-    }
-
-    pub fn beep(&mut self) -> bool {
-        self.beep
     }
 }
 
 impl Chip8 {
-    fn process_opcode(&mut self) {
-        let opcode = self.fetch_opcode();
+    fn process_opcode(&mut self, opcode: u16) {
         let id = opcode & 0xF000;
         let addr = opcode & 0x0FFF;
         let nibble = (opcode & 0x000F) as u8;
@@ -114,7 +103,7 @@ impl Chip8 {
 
         match id {
             0x0000 => match byte {
-                0xE0 => self.vram = [0u8; SCREEN_WIDTH * SCREEN_HEIGHT],
+                0xE0 => self.vram = [0u8; SCREEN_PIXEL_WIDTH * SCREEN_PIXEL_HEIGHT],
                 0xEE => self.return_subroutine(),
                 _ => panic!("unknown opcode 0x{:04X}", opcode),
             },
@@ -171,6 +160,13 @@ impl Chip8 {
         }
     }
 
+    fn fetch_opcode(&mut self) -> u16 {
+        let opcode =
+            (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
+        self.pc += 2;
+        opcode
+    }
+
     fn add(&mut self, x: usize, y: usize) {
         let (sum, overflow) = self.registers[x].overflowing_add(self.registers[y]);
         self.registers[0xF] = overflow as u8;
@@ -223,12 +219,11 @@ impl Chip8 {
 
     fn draw_sprite(&mut self, x0: usize, y0: usize, height: usize) {
         let mut collision = false;
-
         for y in 0..height {
             let sprite = self.ram[self.i as usize + y];
             for x in 0..8 {
-                let addr = (y0 + y) * SCREEN_WIDTH + x0 + x;
-                if (sprite & (0x80 >> x)) != 0 && addr < SCREEN_WIDTH * SCREEN_HEIGHT {
+                let addr = (y0 + y) * SCREEN_PIXEL_WIDTH + x0 + x;
+                if (sprite & (0x80 >> x)) != 0 && addr < SCREEN_PIXEL_WIDTH * SCREEN_PIXEL_HEIGHT {
                     if self.vram[addr] == 1 {
                         collision = true
                     }
@@ -236,12 +231,11 @@ impl Chip8 {
                 }
             }
         }
-
         self.registers[0xF] = collision as u8;
     }
 
     fn load_font(&mut self) {
-        self.ram[..16 * 5].clone_from_slice(&[
+        let font_set = [
             0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
             0x20, 0x60, 0x20, 0x20, 0x70, // 1
             0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -258,14 +252,8 @@ impl Chip8 {
             0xE0, 0x90, 0x90, 0x90, 0xE0, // D
             0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
             0xF0, 0x80, 0xF0, 0x80, 0x80, // F
-        ]);
-    }
-
-    fn fetch_opcode(&mut self) -> u16 {
-        let opcode =
-            (self.ram[self.pc as usize] as u16) << 8 | self.ram[self.pc as usize + 1] as u16;
-        self.pc += 2;
-        opcode
+        ];
+        self.ram[..font_set.len()].clone_from_slice(&font_set);
     }
 
     // rand crate does not compile to wasm32-unknown-unknown

@@ -1,4 +1,6 @@
 use getrandom::getrandom;
+
+#[cfg(feature = "web")]
 use wasm_bindgen::prelude::*;
 
 pub const SCREEN_PIXEL_WIDTH: usize = 64;
@@ -12,7 +14,7 @@ const RAM_BYTE_LEN: usize = 4 * 1024;
 
 const ROM_START: usize = 0x200;
 
-#[wasm_bindgen]
+#[cfg_attr(feature = "web", wasm_bindgen)]
 pub struct Chip8 {
     vram: [u8; SCREEN_PIXEL_WIDTH * SCREEN_PIXEL_HEIGHT],
     ram: [u8; RAM_BYTE_LEN],
@@ -28,12 +30,10 @@ pub struct Chip8 {
     keys: [bool; NUM_KEYS],
 }
 
-#[wasm_bindgen]
+#[cfg_attr(feature = "web", wasm_bindgen)]
 impl Chip8 {
-    #[wasm_bindgen(constructor)]
+    #[cfg_attr(feature = "web", wasm_bindgen(constructor))]
     pub fn new() -> Chip8 {
-        use console_error_panic_hook;
-        console_error_panic_hook::set_once();
         let mut chip8 = Chip8 {
             vram: [0u8; SCREEN_PIXEL_WIDTH * SCREEN_PIXEL_HEIGHT],
             ram: [0u8; RAM_BYTE_LEN],

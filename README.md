@@ -9,10 +9,10 @@ Wrote it in Rust because I love the language and wanted to explore handling soun
 At `Cargo.toml` level, use the following to build and output to the `demo` directory using [wasm-pack](https://rustwasm.github.io/wasm-pack/):
 
 ```bash
-wasm-pack build --release --target=web --no-typescript -d demo/
+wasm-pack build --release --target=web --no-typescript -d web/ -- --features web
 ```
 
-Then just serve the `demo` folder and open `index.html` in a browser.
+Then just serve the `web` folder and open `index.html` in a browser.
 
 ## References
 

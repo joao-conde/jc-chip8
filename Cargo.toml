@@ -1,9 +1,12 @@
 [package]
 name = "jc-chip8"
-version = "0.1.0"
-authors = ["João <joaodiasconde@gmail.com>"]
-description = "Chip-8 Emulator in Rust and compilable to WASM"
+version = "1.0.0"
+authors = ["João Conde <joaodiasconde@gmail.com>"]
 edition = "2018"
+description = "Chip-8 Emulator in Rust and WASM demo"
+repository = "https://github.com/joao-conde/jc-chip8"
+license = "MIT"
+keywords = ["chip-8", "emulator", "rust", "wasm"]
 
 [lib]
 name = "jc_chip8"

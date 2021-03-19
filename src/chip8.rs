@@ -32,6 +32,8 @@ pub struct Chip8 {
 impl Chip8 {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Chip8 {
+        use console_error_panic_hook;
+        console_error_panic_hook::set_once();
         let mut chip8 = Chip8 {
             vram: [0u8; SCREEN_PIXEL_WIDTH * SCREEN_PIXEL_HEIGHT],
             ram: [0u8; RAM_BYTE_LEN],

@@ -1,6 +1,10 @@
 const select = document.querySelector("select#roms");
 
-const ROMS = [
+const ROMS = [,
+    "test/BC_test",
+    "test/c8_test",
+    "test/Keypad Test [Hap, 2006]",
+    "test/test_opcode",
     "Blitz",
     "Breakout",
     "Brix",

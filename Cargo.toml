@@ -1,16 +1,13 @@
 [package]
 name = "jc-chip8"
 version = "0.1.0"
-authors = ["João <joaodiasconde@gmail.com>"]
+authors = ["João Conde <joaodiasconde@gmail.com>"]
 description = "Chip-8 Emulator in Rust and compilable to WASM"
 edition = "2018"
 
 [lib]
 name = "jc_chip8"
 crate-type = ["cdylib", "rlib"]
-
-[dependencies]
-console_error_panic_hook = "0.1.6"
 
 [dependencies.getrandom]
 version = "0.2"

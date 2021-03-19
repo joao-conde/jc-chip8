@@ -1,0 +1,13 @@
+[package]
+name = "desktop-demo"
+version = "1.0.0"
+authors = ["João Conde <joaodiasconde@gmail.com>"]
+edition = "2018"
+
+[dependencies.jc-chip8]
+path = "../../"
+
+[dependencies.sdl2]
+version = "0.34.3"
+features = ["bundled", "static-link"]
+git = "https://github.com/joao-conde/rust-sdl2"

@@ -1,6 +1,6 @@
 # Chip-8 emulator
 
-Chip-8 emulator written in Rust and compilable to WASM.
+Chip-8 emulator written in Rust🦀 and compilable to WASM🕸.
 
 Wrote it in Rust because I love the language and wanted to explore handling sound, video and user input with JavaScript + WASM.
 

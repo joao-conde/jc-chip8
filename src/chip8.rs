@@ -218,13 +218,14 @@ impl Chip8 {
     }
 
     fn draw_sprite(&mut self, x0: usize, y0: usize, height: usize) {
+        self.registers[0xF] = 0;
         for y in 0..height {
             let sprite = self.ram[self.i as usize + y];
             for x in 0..8 {
                 let addr = (y0 + y) * SCREEN_PIXEL_WIDTH + x0 + x;
                 if (sprite & (0x80 >> x)) != 0 && addr < SCREEN_PIXEL_WIDTH * SCREEN_PIXEL_HEIGHT {
                     if self.vram[addr] == 1 {
-                        self.registers[0xF] = true as u8;
+                        self.registers[0xF] = 1;
                     }
                     self.vram[addr] ^= 1
                 }

@@ -1,0 +1,19 @@
+[package]
+name = "desktop"
+version = "1.0.0"
+authors = ["João Conde <joaodiasconde@gmail.com>"]
+edition = "2018"
+description = "Chip-8 Emulator Desktop Application"
+license = "MIT"
+
+[dependencies.sdl2]
+version = "0.34.5"
+features = ["bundled", "static-link"]
+
+[dependencies.jc-chip8]
+path = "../.."
+
+[profile.release]
+debug = false
+lto = true
+opt-level = 3

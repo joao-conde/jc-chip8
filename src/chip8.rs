@@ -52,6 +52,21 @@ impl Chip8 {
         chip8
     }
 
+    pub fn reset(&mut self) {
+        self.vram = [0u8; SCREEN_PIXEL_WIDTH * SCREEN_PIXEL_HEIGHT];
+        self.registers = [0u8; NUM_REGISTERS];
+        self.stack = [0u16; STACK_SIZE];
+        self.i = 0;
+        self.dt = 0;
+        self.st = 0;
+        self.pc = ROM_START as u16;
+        self.sp = 0;
+        self.beep = false;
+        self.last_key = 0x00;
+        self.keys = [false; NUM_KEYS];
+        self.load_font();
+    }
+
     pub fn pixels(&self) -> Vec<u8> {
         self.vram.to_vec()
     }

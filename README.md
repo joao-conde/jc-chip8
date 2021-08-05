@@ -1,21 +1,49 @@
 # Chip-8 emulator
 
-Chip-8 emulator written in Rust🦀 and compilable to WASM🕸.
+Chip-8 emulator written in Rust 🦀 and compilable to WASM 🕸.
 
-Wrote it in Rust because I love the language and wanted to explore handling sound, video and user input with JavaScript + WASM.
+# API Reference
 
-## Building
+Use the `Chip8` struct to create an emulator instance and interact with it using the following API:
 
-At `Cargo.toml` level, use the following to build and output to the `web` directory using [wasm-pack](https://rustwasm.github.io/wasm-pack/):
-
-```bash
-wasm-pack build --release --target=web --no-typescript -d examples/web/ -- --features web
+```rust
+impl Chip8 {
+  pub fn new() -> Chip8;
+  pub fn load_rom(&mut self, rom: &[u8]);
+  pub fn reset(&mut self);
+  pub fn clock(&mut self);
+  pub fn clock_dt(&mut self);
+  pub fn clock_st(&mut self);
+  pub fn pixels(&self) -> Vec<u8>;
+  pub fn beep(&self) -> bool;
+  pub fn key_press(&mut self, key: u8);
+  pub fn key_lift(&mut self, key: u8);
+}
 ```
 
-Then just serve the `examples/web` folder with any HTTP server and open `index.html` in a browser.
+Typical usage:
 
-## References
+```rust
+use jc_chip8::chip8::{Chip8, SCREEN_PIXEL_HEIGHT, SCREEN_PIXEL_WIDTH};
 
-1. [Cowgod's Chip-8 Technical Reference v1.0](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM)
-2. [Wikipedia](https://en.wikipedia.org/wiki/CHIP-8)
-3. [My previous TypeScript implementation](https://github.com/joao-conde/chip8-emulator-ts)
+let mut chip8 = Chip8::new();
+chip8.load_rom(&rom);
+
+loop {
+  chip8.clock();
+  chip8.clock_dt();
+  chip8.clock_st();
+
+  // Your draw code
+  let pixels = chip8.pixels();
+  ...
+  
+  // Your event processing
+  match event {
+    ... => chip8.key_press(0x01)
+    ... => chip8.key_press(0x0F)
+    ... => chip8.key_lift(0x0A)
+    ... => chip8.key_lift(0x0F)
+  }
+}
+```

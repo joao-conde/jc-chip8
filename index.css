@@ -1,0 +1,37 @@
+body {
+    background-color: black;
+    margin: 0px 0px 0px 0px;
+}
+
+h1, h3 {
+    color: white;
+    text-align: center;
+}
+
+button#play {
+    display: flex;
+    margin: 0 auto 0 auto;
+}
+
+select#roms {
+    display: flex;
+    margin: 0 auto 0 auto;
+}
+
+canvas {
+    bottom: 0px;
+    left: 0px;
+    margin: auto auto auto auto;
+    max-height: 100%;
+    max-width: 100%;
+    outline: white 3px solid;
+    -o-outline: white 3px solid;
+    -ms-outline: white 3px solid;
+    -moz-outline: white 3px solid;
+    -khtml-outline: white 3px solid;
+    -webkit-outline: white 3px solid;
+    overflow: auto;
+    position: fixed;
+    right: 0px;
+    top: 0px;
+}

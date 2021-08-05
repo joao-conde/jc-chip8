@@ -4,7 +4,7 @@ use std::{fs::File, io::Read};
 
 const PIXEL_SET: [u8; 3] = [255, 255, 255];
 const SYSTEM_HZ: u32 = 240;
-const SCREEN_SCALE: f32 = 10.0;
+const SCREEN_SCALE: f32 = 15.0;
 const TITLE: &str = "Drag and drop the ROM file to play";
 
 fn main() {

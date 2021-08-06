@@ -8,7 +8,7 @@ Chip-8 emulator written in Rust 🦀 and compilable to WASM 🕸.
 </p>
 
 <p align="center">
-  <img width="40%" height="40%" align="center" src="https://drive.google.com/uc?export=view&id=17yP0qo0eGuCRNW4HSX9a0zZOzXYY12bM">
+  <img width="40%" height="40%" align="center" src="https://drive.google.com/uc?export=view&id=13JyC2nAz7oPZ0Qmh2PHS0jagspBilHD0">
   <img width="40%" height="40%" align="center" src="https://drive.google.com/uc?export=view&id=17yP0qo0eGuCRNW4HSX9a0zZOzXYY12bM">
 </p>
 

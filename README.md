@@ -58,6 +58,7 @@ loop {
     ... => chip8.key_press(0x0F)
     ... => chip8.key_lift(0x0A)
     ... => chip8.key_lift(0x0F)
+    ...
   }
 }
 ```

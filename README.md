@@ -2,6 +2,20 @@
 
 Chip-8 emulator written in Rust 🦀 and compilable to WASM 🕸.
 
+<p align="center">
+  <img width="40%" height="40%" align="center" src="https://drive.google.com/uc?export=view&id=1Cq7X0aUGUPrubIAZvD_6z3cOCHO7e_Qu">
+  <img width="40%" height="40%" align="center" src="https://drive.google.com/uc?export=view&id=1hCUAa4PsyqbMtl2OD1TeAI0X1g6DB3tt">
+</p>
+
+<p align="center">
+  <img width="40%" height="40%" align="center" src="https://drive.google.com/uc?export=view&id=17yP0qo0eGuCRNW4HSX9a0zZOzXYY12bM">
+  <img width="40%" height="40%" align="center" src="https://drive.google.com/uc?export=view&id=17yP0qo0eGuCRNW4HSX9a0zZOzXYY12bM">
+</p>
+
+# Running
+
+See the [`examples`](./examples) folder.
+
 # API Reference
 
 Use the `Chip8` struct to create an emulator instance and interact with it using the following API:

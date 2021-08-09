@@ -6,11 +6,57 @@
       <link rel="stylesheet" type="text/css" href="./index.css">
    </head>
    <body>
-      <h1>Chip-8 Emulator</h1>
-      <h3>Rust🦀 + WebAssembly🕸</h3>
-      <button id="play">Play</button>
-      <select id="roms"></select>
-      <canvas id="scaled" width="960" height="480"></canvas>
+      <main>
+         <div class="left-sidebar"/></div>
+
+         <div class="main-wrapper">
+            <h1>Chip-8</h1>
+
+            <canvas id="scaled" width="960" height="480"></canvas>
+
+            <div class="actions">
+               <a href="https://github.com/joao-conde/jc-chip8">
+                  <img src="./public/icons/github.png">
+               </a>
+               <a href="https://ko-fi.com/joaoconde">
+                  <img src="./public/icons/kofi.png">
+               </a>
+            </div>
+         </div>
+
+         <div class="right-sidebar">
+            <div></div>
+
+            <select id="roms">
+               <option value="" disabled selected>Choose a ROM...</option>
+            </select>
+
+            <div class="separator"></div>
+
+            <div class="key-overlay">
+               <div>Keyboard</div>
+               <div class="keyboard">
+                  <div class="key">1</div>
+                  <div class="key">2</div>
+                  <div class="key">3</div>
+                  <div class="key">4</div>
+                  <div class="key">Q</div>
+                  <div class="key">W</div>
+                  <div class="key">E</div>
+                  <div class="key">R</div>
+                  <div class="key">A</div>
+                  <div class="key">S</div>
+                  <div class="key">D</div>
+                  <div class="key">F</div>
+                  <div class="key">Z</div>
+                  <div class="key">X</div>
+                  <div class="key">C</div>
+                  <div class="key">V</div>
+               </div>
+            </div>
+         </div>
+      </main>
+
       <script type="module" src="./index.js"></script>
    </body>
 </html>

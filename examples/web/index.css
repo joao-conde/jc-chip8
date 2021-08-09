@@ -24,14 +24,6 @@ main > div {
     margin: 0 1em;
 }
 
-.left-sidebar {
-    width: 240px;
-}
-
-.right-sidebar > div:first-child {
-    height: 48px;
-}
-
 h1 {
     margin: 0 0 0.25em 0;
     font-size: 3rem;
@@ -54,13 +46,29 @@ select {
     margin-top: 0.5em;
 }
 
+select option {
+    font-size: 18px;
+    background: #1B1A17;
+}
+
+img {
+    width: 28px;
+}
+
+a {
+    text-decoration: none;
+}
+
 select:focus {
     outline: none !important;
 }
 
-select option {
-    font-size: 18px;
-    background: #1B1A17;
+.left-sidebar {
+    width: 240px;
+}
+
+.right-sidebar > div:first-child {
+    height: 48px;
 }
 
 .keyboard {
@@ -87,12 +95,4 @@ select option {
     width: 100%;
     margin: 0.5em 0 1.5em -0.1em;
     border-top: 3px dashed #50CB93;
-}
-
-img {
-    width: 28px;
-}
-
-a {
-    text-decoration: none;
 }

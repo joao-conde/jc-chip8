@@ -1,37 +1,98 @@
-body {
-    background-color: black;
-    margin: 0px 0px 0px 0px;
+@font-face {
+    font-family: 'M20';
+    src: url(./public/fonts/m20.ttf);
 }
 
-h1, h3 {
-    color: white;
-    text-align: center;
+* {
+    font-family: 'M20';
+    color: #50CB93;
+}   
+
+html, body {
+    margin: 0;
+    height: 100%;
+    background: #1B1A17;
 }
 
-button#play {
+main {
     display: flex;
-    margin: 0 auto 0 auto;
+    padding: 5em 2em;
+    justify-content: center;
 }
 
-select#roms {
-    display: flex;
-    margin: 0 auto 0 auto;
+.left-sidebar {
+    width: 240px;
+}
+
+.right-sidebar > div:first-child {
+    height: 48px;
+}
+
+main > div {
+    margin: 0 1em;
+}
+
+h1 {
+    margin: 0 0 0.25em 0;
+    font-size: 3rem;
+    font-weight: normal;
 }
 
 canvas {
-    bottom: 0px;
-    left: 0px;
-    margin: auto auto auto auto;
-    max-height: 100%;
-    max-width: 100%;
-    outline: white 3px solid;
-    -o-outline: white 3px solid;
-    -ms-outline: white 3px solid;
-    -moz-outline: white 3px solid;
-    -khtml-outline: white 3px solid;
-    -webkit-outline: white 3px solid;
-    overflow: auto;
-    position: fixed;
-    right: 0px;
-    top: 0px;
+    margin-bottom: 0.5em;
+    border: 3px dashed #50CB93;
+}
+
+select {
+    display: flex;
+    background: transparent;
+    margin-left: -0.3em;
+    color: #50CB93;
+    border: unset;
+    font-size: 20px;
+    width: 100%;
+    margin-top: 0.5em;
+}
+
+select:focus {
+    outline: none !important;
+}
+
+select option {
+    font-size: 18px;
+    background: #1B1A17;
+}
+
+.keyboard {
+    display: grid;
+    text-align: center;
+    grid-template-columns: repeat(4, 3em);
+    gap: 1em;
+    margin-bottom: 1em;
+}
+
+.key {
+    padding: 1em;
+    width: 1em;
+    height: 1em;
+    color: #50CB93;
+    outline: 2px solid #50CB93;
+}
+
+.key-overlay > div:first-child {
+    margin-bottom: 1em;
+}
+
+.separator {
+    width: 100%;
+    margin: 0.5em 0 1.5em -0.1em;
+    border-top: 3px dashed #50CB93;
+}
+
+img {
+    width: 28px;
+}
+
+a {
+    text-decoration: none;
 }

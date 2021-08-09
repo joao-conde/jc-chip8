@@ -2,7 +2,7 @@ use jc_chip8::chip8::{Chip8, SCREEN_PIXEL_HEIGHT, SCREEN_PIXEL_WIDTH};
 use sdl2::{event::Event, keyboard::Keycode, pixels::PixelFormatEnum};
 use std::{fs::File, io::Read};
 
-const PIXEL_SET: [u8; 3] = [255, 255, 255];
+const PIXEL_SET: [u8; 3] = [80, 203, 147];
 const SYSTEM_HZ: u32 = 240;
 const SCREEN_SCALE: f32 = 15.0;
 const TITLE: &str = "Drag and drop the ROM file to play";

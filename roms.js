@@ -1,20 +1,13 @@
 const ROMS = [
-    "Blitz",
     "Brix",
-    "Breakout",
     "Connect4",
     "Flightrunner",
     "Hidden",
     "Merlin",
     "Missile",
-    "Outlaw",
     "Pong",
-    "Space Invaders",
-    "Tank",
     "Tetris",
-    "TicTac",
-    "UFO",
-    "Vers",
+    "TicTac"
 ];
 
 export async function getROM() {

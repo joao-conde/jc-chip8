@@ -1,5 +1,5 @@
-const PIXEL_SET_COLOR = 0xFFFFFFFFFF; // white
-const PIXEL_UNSET_COLOR = 0x000000FF; // black
+const PIXEL_SET_COLOR = 0x50CB93FF;
+const PIXEL_UNSET_COLOR = 0x1B1A17FF;
 
 const canvas = document.createElement("canvas");
 canvas.width = 64;

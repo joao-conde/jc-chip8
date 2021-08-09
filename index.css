@@ -20,16 +20,16 @@ main {
     justify-content: center;
 }
 
+main > div {
+    margin: 0 1em;
+}
+
 .left-sidebar {
     width: 240px;
 }
 
 .right-sidebar > div:first-child {
     height: 48px;
-}
-
-main > div {
-    margin: 0 1em;
 }
 
 h1 {

@@ -22,6 +22,8 @@ const SOUND_HZ = 60;
     window.onkeydown = onKeyDown;
     window.onkeyup = onKeyUp;
 
-    document.querySelector("button#play").onclick = play;
+    // play ROM on change
+    document.querySelector('#roms').onchange = e => play(e.target.value);
+
     listROMs();
 })();

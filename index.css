@@ -53,10 +53,24 @@ select option {
 
 img {
     width: 28px;
+    opacity: 0.3;
+}
+
+img:hover {
+    transition: all 0.1s ease;
+    opacity: 1;
 }
 
 a {
     text-decoration: none;
+}
+
+#keyboard {
+    display: grid;
+    text-align: center;
+    grid-template-columns: repeat(4, 3em);
+    gap: 1em;
+    margin-bottom: 1em;
 }
 
 select:focus {
@@ -71,20 +85,13 @@ select:focus {
     height: 48px;
 }
 
-.keyboard {
-    display: grid;
-    text-align: center;
-    grid-template-columns: repeat(4, 3em);
-    gap: 1em;
-    margin-bottom: 1em;
-}
-
 .key {
     padding: 1em;
     width: 1em;
     height: 1em;
     color: #50CB93;
     outline: 2px solid #50CB93;
+    opacity: 0.3;
 }
 
 .key-overlay > div:first-child {

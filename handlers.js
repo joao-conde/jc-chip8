@@ -2,28 +2,10 @@ import { Chip8 } from "./jc_chip8.js";
 
 import { beep } from "./sound.js";
 import { getROM } from "./roms.js";
+import { KEY_MAPPER } from "./keys.js";
 import { updateCanvas } from "./canvas.js";
 
 let chip8 = null;
-
-const KEY_MAPPER = {
-    "1": 0x01,
-    "2": 0x02,
-    "3": 0x03,
-    "4": 0x0C,
-    "q": 0x04,
-    "w": 0x05,
-    "e": 0x06,
-    "r": 0x0D,
-    "a": 0x07,
-    "s": 0x08,
-    "d": 0x09,
-    "f": 0x0E,
-    "z": 0x0A,
-    "x": 0x00,
-    "c": 0x0B,
-    "v": 0x0F
-};
 
 export const play = async () => {
     const rom = await getROM();
@@ -52,9 +34,15 @@ export const audio = () => {
 };
 
 export const onKeyDown = (event) => {
-    if (chip8) chip8.key_press(KEY_MAPPER[event.key]);
+    const key = KEY_MAPPER[event.key];
+    if (key === undefined) return;
+    if (chip8) chip8.key_press(key);
+    document.querySelector(`#key-${event.key}`).style.opacity = "1";
 };
 
 export const onKeyUp = (event) => {
-    if (chip8) chip8.key_lift(KEY_MAPPER[event.key]);
+    const key = KEY_MAPPER[event.key];
+    if (key === undefined) return;
+    if (chip8) chip8.key_lift(key);
+    document.querySelector(`#key-${event.key}`).style.opacity = "0.3";
 };

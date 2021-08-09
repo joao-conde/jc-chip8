@@ -1,6 +1,7 @@
 import { default as wasm } from "./jc_chip8.js";
 
 import { listROMs } from "./roms.js";
+import { listKeys } from "./keys.js";
 import { play, clock, clockDT, clockST, render, audio, onKeyDown, onKeyUp } from "./handlers.js";
 
 const FPS = 144;
@@ -26,4 +27,5 @@ const SOUND_HZ = 60;
     document.querySelector('#roms').onchange = e => play(e.target.value);
 
     listROMs();
+    listKeys();
 })();

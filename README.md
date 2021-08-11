@@ -14,7 +14,7 @@ Chip-8 emulator written in Rust 🦀 and compilable to WASM 🕸.
 
 # Running
 
-See the [`examples`](./examples) folder.
+See the [`bin`](./bin) folder.
 
 # API Reference
 

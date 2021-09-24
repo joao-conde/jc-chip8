@@ -22,8 +22,3 @@ features = ["js"]
 [dependencies.wasm-bindgen]
 version = "0.2"
 optional = true
-
-[profile.release]
-debug = false
-lto = true
-opt-level = 3

@@ -29,7 +29,7 @@ impl Chip8 {
 }
 ```
 
-Typical usage:
+Basic usage:
 
 ```rust
 use jc_chip8::chip8::{Chip8, SCREEN_PIXEL_HEIGHT, SCREEN_PIXEL_WIDTH};
@@ -52,6 +52,11 @@ loop {
     ... => chip8.key_press(0x0F)
     ... => chip8.key_lift(0x0A)
     ... => chip8.key_lift(0x0F)
+    ...
+  }
+  
+  // Your sound code
+  if chip8.beep() {
     ...
   }
 }

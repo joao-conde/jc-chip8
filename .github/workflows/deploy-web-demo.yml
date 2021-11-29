@@ -20,5 +20,5 @@ jobs:
           REPO: self
           BRANCH: gh-pages
           FOLDER: bin/web
-          MESSAGE: "{sha}: {msg}"
+          MESSAGE: "{sha} {msg}"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -10,6 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - run: rustc --version
+      - run: cargo --version
+      - run: wasm-pack --version
       - run: wasm-pack build --release --target=web --no-typescript -d bin/web/ -- --features web
       - run: rm bin/web/.gitignore bin/web/package.json
       - uses: s0/git-publish-subdir-action@develop
@@ -17,5 +20,5 @@ jobs:
           REPO: self
           BRANCH: gh-pages
           FOLDER: bin/web
-          MESSAGE: "Build ({sha}): {msg}"
+          MESSAGE: "{sha}: {msg}"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -15,18 +15,16 @@ See the [`bin`](./bin) folder.
 Use the `Chip8` struct to create an emulator instance and interact with it using the following API:
 
 ```rust
-impl Chip8 {
-  pub fn new() -> Chip8;
-  pub fn load_rom(&mut self, rom: &[u8]);
-  pub fn reset(&mut self);
-  pub fn clock(&mut self);
-  pub fn clock_dt(&mut self);
-  pub fn clock_st(&mut self);
-  pub fn pixels(&self) -> Vec<u8>;
-  pub fn beep(&self) -> bool;
-  pub fn key_press(&mut self, key: u8);
-  pub fn key_lift(&mut self, key: u8);
-}
+pub fn new() -> Chip8;
+pub fn load_rom(&mut self, rom: &[u8]);
+pub fn reset(&mut self);
+pub fn clock(&mut self);
+pub fn clock_dt(&mut self);
+pub fn clock_st(&mut self);
+pub fn pixels(&self) -> Vec<u8>;
+pub fn beep(&self) -> bool;
+pub fn key_press(&mut self, key: u8);
+pub fn key_lift(&mut self, key: u8);
 ```
 
 Basic usage:

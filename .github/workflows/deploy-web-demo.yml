@@ -14,7 +14,9 @@ jobs:
       - run: cargo --version
       - run: wasm-pack --version
       - run: wasm-pack build --release --target=web --no-typescript -d bin/web/ -- --features web
-      - run: rm bin/web/.gitignore bin/web/package.json
+      - run: rm bin/web/.gitignore
+      - run: rm bin/web/package.json
+      - run: ls bin/web/
       - uses: s0/git-publish-subdir-action@develop
         env:
           REPO: self

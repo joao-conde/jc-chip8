@@ -17,7 +17,7 @@ jobs:
       - run: rm bin/web/.gitignore
       - run: rm bin/web/package.json
       - run: ls bin/web/
-      - uses: s0/git-publish-subdir-action@develop
+      - uses: s0/git-publish-subdir-action@v2.5.0
         env:
           REPO: self
           BRANCH: gh-pages

@@ -9,11 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: ls bin/web/
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - run: rustc --version
       - run: cargo --version
       - run: wasm-pack --version
       - run: wasm-pack build --release --target=web --no-typescript -d bin/web/ -- --features web
+      - run: ls bin/web/
       - run: rm bin/web/.gitignore
       - run: rm bin/web/package.json
       - run: ls bin/web/

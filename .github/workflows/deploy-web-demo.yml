@@ -9,17 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: ls bin/web/
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - run: rustc --version
       - run: cargo --version
       - run: wasm-pack --version
       - run: wasm-pack build --release --target=web --no-typescript -d bin/web/wasmpack -- --features web
       - run: rm bin/web/wasmpack/.gitignore bin/web/wasmpack/package.json
-      - run: ls bin/web/
-      - run: ls bin/web/wasmpack
       - run: cp bin/web/wasmpack/* bin/web
-      - run: ls bin/web/
+      - run: rm -rf bin/web/wasmpack
       - uses: s0/git-publish-subdir-action@v2.5.0
         env:
           REPO: self

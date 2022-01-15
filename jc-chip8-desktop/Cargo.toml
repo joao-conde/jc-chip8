@@ -7,7 +7,7 @@ description = "Chip-8 Emulator Desktop Application"
 license = "MIT"
 
 [dependencies.jc-chip8]
-path = "../.."
+path = "../jc-chip8"
 
 [dependencies.sdl2]
 version = "0.35"

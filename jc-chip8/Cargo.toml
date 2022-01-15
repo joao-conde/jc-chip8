@@ -8,10 +8,6 @@ repository = "https://github.com/joao-conde/jc-chip8"
 license = "MIT"
 keywords = ["chip-8", "emulator", "rust", "wasm"]
 
-[lib]
-name = "jc_chip8"
-crate-type = ["cdylib", "rlib"]
-
 [features]
 web = ["wasm-bindgen"]
 

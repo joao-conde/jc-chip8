@@ -1,6 +1,6 @@
-# Desktop Chip-8 emulator
+# Desktop CHIP-8 Emulator
 
-Utilizes the `jc-chip8` crate and the [SDL crate](https://github.com/Rust-SDL2/rust-sdl2) to build a desktop application.
+Utilizes the [`jc-chip8`](../../jc-chip8/) crate and the [SDL crate](https://github.com/Rust-SDL2/rust-sdl2) to build a desktop application.
 
 ## Running
 
@@ -8,8 +8,16 @@ Utilizes the `jc-chip8` crate and the [SDL crate](https://github.com/Rust-SDL2/r
 $ cargo run --release
 ```
 
-And then drag and drop your game's ROM file.
+Drag and drop your ROM to play.
 
 ## Controls
 
-16 keys available: `1 2 3 5 Q W E R A S D F Z X C V`
+Keys available: 
+
+`1 2 3 4`
+
+`Q W E R`
+
+`A S D F`
+
+`Z X C V`

@@ -1,6 +1,6 @@
-# Chip-8 emulator
+# CHIP-8 emulator
 
-Chip-8 emulator written in Rust 🦀 and compilable to WASM 🕸. 
+CHIP-8 emulator in Rust 🦀 compilable to WASM 🕸. 
 
 Below is a web demo using this crate. [Play here!](https://joao-conde.github.io/jc-chip8)
 
@@ -8,7 +8,7 @@ Below is a web demo using this crate. [Play here!](https://joao-conde.github.io/
 
 # Running
 
-See the [`bin`](./bin) folder.
+See the [`examples`](./examples) folder.
 
 # API Reference
 

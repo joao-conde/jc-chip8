@@ -1,61 +1,19 @@
-# Chip-8 emulator
+# Web CHIP-8 Emulator
 
-Chip-8 emulator written in Rust 🦀 and compilable to WASM 🕸. 
+Utilizes the [`jc-chip8`](../../jc-chip8/) crate compiled to [WebAssembly](https://webassembly.org/) to build a web application.
 
-Below is a web demo using this crate. [Play here!](https://joao-conde.github.io/jc-chip8)
+## Running
 
-![chip8-web](https://user-images.githubusercontent.com/16060539/135887650-2d98f22f-cdbc-4356-bee4-d1b75d2ec3e6.gif)
+Serve the contents of this folder with any HTTP server and open `index.html`.
 
-# Running
+## Controls
 
-See the [`bin`](./bin) folder.
+Keys available: 
 
-# API Reference
+`1 2 3 4`
 
-Use the `Chip8` struct to create an emulator instance and interact with it using the following API:
+`Q W E R`
 
-```rust
-pub fn new() -> Chip8;
-pub fn load_rom(&mut self, rom: &[u8]);
-pub fn reset(&mut self);
-pub fn clock(&mut self);
-pub fn clock_dt(&mut self);
-pub fn clock_st(&mut self);
-pub fn pixels(&self) -> Vec<u8>;
-pub fn beep(&self) -> bool;
-pub fn key_press(&mut self, key: u8);
-pub fn key_lift(&mut self, key: u8);
-```
+`A S D F`
 
-Basic usage:
-
-```rust
-use jc_chip8::chip8::{Chip8, SCREEN_PIXEL_HEIGHT, SCREEN_PIXEL_WIDTH};
-
-let mut chip8 = Chip8::new();
-chip8.load_rom(&rom);
-
-loop {
-  chip8.clock();
-  chip8.clock_dt();
-  chip8.clock_st();
-
-  // Your draw code
-  let pixels = chip8.pixels();
-  ...
-  
-  // Your event processing
-  match event {
-    ... => chip8.key_press(0x01)
-    ... => chip8.key_press(0x0F)
-    ... => chip8.key_lift(0x0A)
-    ... => chip8.key_lift(0x0F)
-    ...
-  }
-  
-  // Your sound code
-  if chip8.beep() {
-    ...
-  }
-}
-```
+`Z X C V`

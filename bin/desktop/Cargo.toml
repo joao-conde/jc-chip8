@@ -6,12 +6,12 @@ edition = "2018"
 description = "Chip-8 Emulator Desktop Application"
 license = "MIT"
 
-[dependencies.sdl2]
-version = "0.34.5"
-features = ["bundled", "static-link"]
-
 [dependencies.jc-chip8]
 path = "../.."
+
+[dependencies.sdl2]
+version = "0.35"
+features = ["bundled", "static-link"]
 
 [profile.release]
 debug = false

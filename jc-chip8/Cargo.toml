@@ -6,7 +6,7 @@ edition = "2018"
 description = "Chip-8 Emulator in Rust"
 repository = "https://github.com/joao-conde/jc-chip8"
 license = "MIT"
-keywords = ["chip-8", "emulator", "rust", "wasm"]
+keywords = ["CHIP-8", "emulator", "rust", "wasm"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]

@@ -76,7 +76,7 @@ impl Chip8 {
     }
 
     pub fn load_rom(&mut self, rom: &[u8]) {
-        self.ram[ROM_START..ROM_START + rom.len()].clone_from_slice(&rom);
+        self.ram[ROM_START..ROM_START + rom.len()].clone_from_slice(rom);
     }
 
     pub fn clock(&mut self) {
@@ -277,5 +277,11 @@ impl Chip8 {
         let mut n = [0];
         getrandom(&mut n).unwrap();
         n[0]
+    }
+}
+
+impl Default for Chip8 {
+    fn default() -> Chip8 {
+        Chip8::new()
     }
 }

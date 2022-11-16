@@ -190,7 +190,7 @@ impl Chip8 {
 
     fn sub(&mut self, x: usize, y: usize) -> u8 {
         self.registers[0xF] = (self.registers[x] > self.registers[y]) as u8;
-        self.registers[x].saturating_sub(self.registers[y])
+        self.registers[x].wrapping_sub(self.registers[y])
     }
 
     fn call_subroutine(&mut self, addr: u16) {

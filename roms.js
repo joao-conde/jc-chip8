@@ -6,6 +6,7 @@ const ROMS = [
     "Merlin",
     "Missile",
     "Pong",
+    "Tests",
     "Tetris",
     "TicTac"
 ];

@@ -1,6 +1,7 @@
+use std::{fs::File, io::Read};
+
 use jc_chip8::chip8::{Chip8, SCREEN_PIXEL_HEIGHT, SCREEN_PIXEL_WIDTH};
 use sdl2::{event::Event, keyboard::Keycode, pixels::PixelFormatEnum};
-use std::{fs::File, io::Read};
 
 const PIXEL_SET: [u8; 3] = [80, 203, 147];
 const SYSTEM_HZ: u32 = 240;
@@ -98,7 +99,7 @@ fn main() {
             }
 
             texture
-                .update(None, &rgb_pixels, SCREEN_PIXEL_WIDTH as usize * 3)
+                .update(None, &rgb_pixels, SCREEN_PIXEL_WIDTH * 3)
                 .unwrap();
             canvas.copy(&texture, None, None).unwrap();
             canvas.present();

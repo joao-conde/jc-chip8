@@ -3,17 +3,20 @@ on:
   push:
     branches:
       - master
+env:
+  LIB: jc-chip8
+  WEB: jc-chip8-web
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - run: wasm-pack build jc-chip8 --release --target=web --no-typescript -d ../examples/web/wasmpack -- --features web
-      - run: rm examples/web/wasmpack/.gitignore examples/web/wasmpack/package.json
-      - run: cp examples/web/wasmpack/* examples/web
-      - run: rm -rf examples/web/wasmpack
-      - uses: s0/git-publish-subdir-action@v2.5.0
+      - run: wasm-pack build ${{ env.LIB }} --release --target=web --no-typescript -d ${{ env.WEB }}/site/wasmpack -- --features web
+      - run: rm ${{ env.WEB }}/site/wasmpack/.gitignore ${{ env.WEB }}/site/wasmpack/package.json
+      - run: cp ${{ env.WEB }}/site/wasmpack/* ${{ env.WEB }}/site
+      - run: rm -rf ${{ env.WEB }}/site/wasmpack
+      - uses: s0/git-publish-subdir-action@v2
         env:
           REPO: self
           BRANCH: gh-pages

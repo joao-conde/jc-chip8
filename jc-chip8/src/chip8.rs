@@ -272,7 +272,8 @@ impl Chip8 {
         self.ram[..font_set.len()].clone_from_slice(&font_set);
     }
 
-    // rand crate does not compile to wasm32-unknown-unknown
+    /// The 'rand' crate does not compile to wasm32-unknown-unknown
+    /// Instead we make use of the `js` feature of [`getrandom`]
     fn rand() -> u8 {
         let mut n = [0];
         getrandom(&mut n).unwrap();

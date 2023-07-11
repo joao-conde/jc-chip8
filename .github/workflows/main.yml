@@ -2,17 +2,21 @@ name: Main Workflow
 on: [push]
 env:
   LIB: jc-chip8
-  DESKTOP: examples/desktop
+  DESKTOP: jc-chip8-desktop
+  WEB: jc-chip8-web
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v2
-        - run: rustup component add rustfmt
-        - run: rustup component add clippy
-        - run: cd ${{ env.LIB }} && cargo fmt --all -- --check
-        - run: cd ${{ env.LIB }} && cargo clippy -- -D clippy::all
-        - run: cd ${{ env.LIB }} && cargo build --release
-        - run: cd ${{ env.DESKTOP }} && cargo fmt --all -- --check
-        - run: cd ${{ env.DESKTOP }} && cargo clippy -- -D clippy::all
-        - run: cd ${{ env.DESKTOP }} && cargo build --release
+      - uses: actions/checkout@v2
+      - run: rustup component add rustfmt
+      - run: rustup component add clippy
+      - run: cd ${{ env.LIB }} && cargo fmt --all -- --check
+      - run: cd ${{ env.LIB }} && cargo clippy -- -D clippy::all
+      - run: cd ${{ env.LIB }} && cargo build --release
+      - run: cd ${{ env.DESKTOP }} && cargo fmt --all -- --check
+      - run: cd ${{ env.DESKTOP }} && cargo clippy -- -D clippy::all
+      - run: cd ${{ env.DESKTOP }} && cargo build --release
+      - run: cd ${{ env.WEB }} && cargo fmt --all -- --check
+      - run: cd ${{ env.WEB }} && cargo clippy -- -D clippy::all
+      - run: cd ${{ env.WEB }} && cargo build --release

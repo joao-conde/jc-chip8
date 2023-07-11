@@ -20,6 +20,6 @@ jobs:
         env:
           REPO: self
           BRANCH: gh-pages
-          FOLDER: examples/web
+          FOLDER: ${{ env.WEB }}/site
           MESSAGE: "{sha} {msg}"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

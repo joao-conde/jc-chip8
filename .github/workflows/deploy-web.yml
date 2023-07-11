@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - run: wasm-pack build ${{ env.LIB }} --release --target=web --no-typescript -d ${{ env.WEB }}/site/wasmpack -- --features web
+      - run: wasm-pack build ${{ env.LIB }} --release --target=web --no-typescript -d ../${{ env.WEB }}/site/wasmpack -- --features web
       - run: rm ${{ env.WEB }}/site/wasmpack/.gitignore ${{ env.WEB }}/site/wasmpack/package.json
       - run: cp ${{ env.WEB }}/site/wasmpack/* ${{ env.WEB }}/site
       - run: rm -rf ${{ env.WEB }}/site/wasmpack

@@ -6,10 +6,6 @@ Below is a web demo using this crate. [Play here!](https://joao-conde.github.io/
 
 ![chip8-web](https://user-images.githubusercontent.com/16060539/135887650-2d98f22f-cdbc-4356-bee4-d1b75d2ec3e6.gif)
 
-# Running
-
-See the [`examples`](./examples) folder.
-
 # API Reference
 
 Use the `Chip8` struct to create an emulator instance and interact with it using the following API:

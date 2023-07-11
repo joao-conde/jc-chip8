@@ -1,6 +1,6 @@
 # CHIP-8 Desktop Emulator
 
-Uses the [`jc-chip8`](../jc-chip8/) crate and the [SDL crate](https://github.com/Rust-SDL2/rust-sdl2) to build a desktop emulator.
+Uses the [`jc-chip8`](../jc-chip8/) crate and the [SDL crate](https://crates.io/crates/sdl2) to build a desktop emulator.
 
 ## Building
 

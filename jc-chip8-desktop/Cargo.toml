@@ -1,19 +1,20 @@
 [package]
-name = "desktop"
+name = "jc-chip8-desktop"
 version = "1.0.0"
 authors = ["João Conde <joaodiasconde@gmail.com>"]
 edition = "2018"
-description = "CHIP-8 Emulator Desktop Application"
+description = "CHIP-8 Desktop Emulator in Rust"
 license = "MIT"
+keywords = ["CHIP-8", "emulator", "rust", "sdl"]
 
 [dependencies.jc-chip8]
-path = "../../jc-chip8"
+path = "../jc-chip8"
 
 [dependencies.sdl2]
 version = "0.35"
 features = ["bundled", "static-link"]
 
 [profile.release]
-debug = false
 lto = true
+debug = false
 opt-level = 3

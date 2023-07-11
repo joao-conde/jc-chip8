@@ -16,7 +16,7 @@ jobs:
       - run: rm ${{ env.WEB }}/site/wasmpack/.gitignore ${{ env.WEB }}/site/wasmpack/package.json
       - run: cp ${{ env.WEB }}/site/wasmpack/* ${{ env.WEB }}/site
       - run: rm -rf ${{ env.WEB }}/site/wasmpack
-      - uses: s0/git-publish-subdir-action@v2
+      - uses: s0/git-publish-subdir-action@v2.6.0
         env:
           REPO: self
           BRANCH: gh-pages
